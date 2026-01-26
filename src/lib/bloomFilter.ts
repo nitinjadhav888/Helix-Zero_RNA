@@ -151,6 +151,15 @@ export class BloomFilter {
     this.bitArray.fill(0);
     this.itemCount = 0;
   }
+
+  /**
+   * Rehydrate from a plain object (for Web Workers)
+   */
+  static fromObject(obj: any): BloomFilter {
+    const filter = Object.create(BloomFilter.prototype);
+    Object.assign(filter, obj);
+    return filter;
+  }
 }
 
 /**
@@ -218,6 +227,15 @@ export class CountingBloomFilter {
 
   contains(item: string): boolean {
     return this.getCount(item) > 0;
+  }
+
+  /**
+   * Rehydrate from a plain object (for Web Workers)
+   */
+  static fromObject(obj: any): CountingBloomFilter {
+    const filter = Object.create(CountingBloomFilter.prototype);
+    Object.assign(filter, obj);
+    return filter;
   }
 }
 

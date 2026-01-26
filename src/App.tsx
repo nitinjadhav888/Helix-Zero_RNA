@@ -1,3 +1,4 @@
+
 import { useState, useCallback, useMemo } from 'react';
 import {
   Dna, Upload, Play, Download, FileText, Shield, Zap, Activity,
@@ -450,14 +451,35 @@ export function App() {
 
       setProgress(0.15);
       
-      // Check if we need to use Bloom filter for large genomes
       const beeGenomeSizeMB = beeSeq.length / (1024 * 1024);
       const useLargeFileMode = beeSeq.length > Config.LARGE_FILE_THRESHOLD;
-      
+
+      // Web Worker Implementation for Parallel Execution
+      const worker = new Worker(new URL('./lib/pipeline.worker.ts', import.meta.url), { type: 'module' });
+
+      worker.onmessage = (e) => {
+        const { type, progress, result, error } = e.data;
+        if (type === 'progress') {
+          setProgress(useLargeFileMode ? 0.4 + progress * 0.55 : 0.3 + progress * 0.65);
+        } else if (type === 'result') {
+          const sortedCandidates = [...result.candidates].sort((a, b) => b.efficiency - a.efficiency);
+          setCandidates(sortedCandidates);
+          setMetrics(result.metrics);
+          setProgress(1);
+          setProgressLabel('Analysis complete');
+          setAnalysisComplete(true);
+          setIsAnalyzing(false);
+          worker.terminate();
+        } else if (type === 'error') {
+          setError(error);
+          setIsAnalyzing(false);
+          worker.terminate();
+        }
+      };
+
       if (useLargeFileMode) {
         setProgressLabel(`Building Bloom filter index for ${beeGenomeSizeMB.toFixed(1)}MB genome...`);
         
-        // Use Bloom filter-based search for large files
         const index = await BloomBasedSearch.buildIndex(beeSeq, (phase, p) => {
           if (phase === 'indexing') {
             setProgress(0.15 + p * 0.25);
@@ -465,68 +487,29 @@ export function App() {
           }
         });
         
-        const searchEngine = new BloomBasedSearch(index, beeSeq);
-        const stats = searchEngine.getStats();
-        
-        setProgress(0.4);
-        setProgressLabel(`Memory: ${stats.indexSizeMB.toFixed(1)}MB | Scanning ${Math.floor(pestSeq.length / 21)} frames...`);
-        
-        // Run pipeline with Bloom filter engine
-        const result = await runPipelineWithBloom(
+        setProgressLabel(`High-throughput parallel scanning initialized...`);
+        worker.postMessage({
+          type: 'bloom',
           pestSeq,
-          searchEngine,
+          beeSeq,
+          index,
           threshold,
-          targetSpecies,
-          (p) => setProgress(0.4 + p * 0.5)
-        );
-        
-        setProgress(0.95);
-        setProgressLabel('Finalizing results...');
-        await new Promise(r => setTimeout(r, 200));
-
-        const sortedCandidates = [...result.candidates].sort((a, b) => b.efficiency - a.efficiency);
-        
-        setCandidates(sortedCandidates);
-        setMetrics(result.metrics);
+          species: targetSpecies
+        });
         
       } else {
-        // Standard hash-based search for smaller files
-        setProgressLabel('Building O(1) hash indices...');
-        await new Promise(r => setTimeout(r, 200));
-
-        const searchEngine = new DeepTechSearch(beeSeq);
-
-        setProgress(0.4);
-        setProgressLabel(`Scanning ${Math.floor(pestSeq.length / 21)} candidate frames...`);
-        
-        // Run pipeline with progress updates
-        const result = runPipeline(
+        setProgressLabel('Initializing high-throughput parallel scan...');
+        worker.postMessage({
+          type: 'standard',
           pestSeq,
-          searchEngine,
+          beeSeq,
           threshold,
-          targetSpecies,
-          (p) => setProgress(0.4 + p * 0.5)
-        );
-
-        setProgress(0.95);
-        setProgressLabel('Finalizing results...');
-        await new Promise(r => setTimeout(r, 200));
-
-        const sortedCandidates = [...result.candidates].sort((a, b) => b.efficiency - a.efficiency);
-        
-        setCandidates(sortedCandidates);
-        setMetrics(result.metrics);
+          species: targetSpecies
+        });
       }
-      
-      setProgress(1);
-      setProgressLabel('Analysis complete');
-      
-      await new Promise(r => setTimeout(r, 300));
-      setAnalysisComplete(true);
       
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An unexpected error occurred');
-    } finally {
       setIsAnalyzing(false);
     }
   }, [useDemo, pestFile, beeFile, threshold, targetSpecies, readFileAsText]);
@@ -1104,6 +1087,30 @@ export function App() {
                            '⚠ Low - Additional validation required'}
                         </p>
                       </div>
+
+                      {/* Explainability Layer */}
+                      {bestCandidate.explanations && (
+                        <div className="p-4 bg-slate-800/50 border border-slate-700 rounded-lg md:col-span-2">
+                          <h4 className="text-sm font-semibold text-slate-300 mb-3 flex items-center gap-2">
+                            <Info className="w-4 h-4 text-cyan-400" />
+                            Engine Interpretability & Risk Logic
+                          </h4>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            {bestCandidate.explanations.map((exp, i) => (
+                              <div key={i} className="flex gap-2">
+                                <div className={cn(
+                                  "w-1 h-full rounded-full mt-1",
+                                  exp.impact === 'positive' ? "bg-emerald-500" : exp.impact === 'negative' ? "bg-red-500" : "bg-blue-500"
+                                )} />
+                                <div>
+                                  <p className="text-[11px] font-bold uppercase text-slate-400">{exp.factor}</p>
+                                  <p className="text-xs text-slate-300">{exp.reasoning}</p>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
 

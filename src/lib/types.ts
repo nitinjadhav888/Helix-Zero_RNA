@@ -1,4 +1,4 @@
-// Helix-Zero v6.3 - React Edition
+// Helix-Zero v6.4 - React Edition
 // Types and Configuration
 // 
 // Large File Support: Up to 500MB genomes using Bloom filter indexing
@@ -18,7 +18,7 @@ export const Config = {
   GC_BUFFER: 60.0,
   DEFAULT_THRESHOLD: 70, // Lowered for better candidate distribution
   ALLOWED_NUCLEOTIDES: new Set(['A', 'C', 'G', 'T', 'U', 'N']),
-  VERSION: '6.3',
+  VERSION: '6.4',
   APP_NAME: 'Helix-Zero',
   // Large file thresholds
   LARGE_FILE_THRESHOLD: 10_000_000, // 10MB - use Bloom filter above this
@@ -64,6 +64,7 @@ export interface Candidate {
   hasPolyRun?: boolean;          // Poly-nucleotide run detected
   riskFactors?: string[];        // List of identified risk factors
   safetyNotes?: string[];        // Safety notes and recommendations
+  explanations?: { factor: string; reasoning: string; impact: 'positive' | 'negative' | 'neutral' }[];
 }
 
 export interface RejectionMetrics {
