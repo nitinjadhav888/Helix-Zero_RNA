@@ -23,7 +23,7 @@
 // Author: Nitin Jadhav
 // Version: 6.3 (Large File Support + Enhanced Safety)
 
-import { Config, SafetyStatus, Candidate, RejectionMetrics, TargetSpecies } from './types';
+import { Config, SafetyStatus, Candidate, RejectionMetrics, TargetSpecies, DELIVERY_SYSTEMS, calculateDeliveryCompatibility } from './types';
 import { BloomFilter, CountingBloomFilter } from './bloomFilter';
 
 // ==========================================
@@ -561,60 +561,7 @@ function predictEfficacyML(seq: string, species: TargetSpecies, foldRisk: number
 /**
  * Generate human-readable risk and efficacy explanations
  */
-function generateExplanations(seq: string, species: TargetSpecies, safety: SafetyAnalysis, efficiency: number): { factor: string; reasoning: string; impact: 'positive' | 'negative' | 'neutral' }[] {
-  const explanations: { factor: string; reasoning: string; impact: 'positive' | 'negative' | 'neutral' }[] = [];
-  
-  explanations.push({
-    factor: 'Predicted Efficacy',
-    reasoning: `Engine predicts ${efficiency.toFixed(1)}% knockdown probability based on hybrid ML model.`,
-    impact: efficiency >= 80 ? 'positive' : efficiency >= 60 ? 'neutral' : 'negative'
-  });
-  
-  // Safety
-  if (safety.maxContiguousMatch < 12) {
-    explanations.push({
-      factor: 'Homology Exclusion',
-      reasoning: `High safety margin (${safety.safetyMargin}nt) against non-target genome.`,
-      impact: 'positive'
-    });
-  } else {
-    explanations.push({
-      factor: 'Homology Risk',
-      reasoning: `Low safety margin (${safety.safetyMargin}nt). Contiguous match of ${safety.maxContiguousMatch}nt detected.`,
-      impact: 'negative'
-    });
-  }
-  
-  // Seed
-  if (!safety.hasSeedMatch) {
-    explanations.push({
-      factor: 'Seed Specificity',
-      reasoning: 'Unique seed region (positions 2-8) minimizes off-target binding potential.',
-      impact: 'positive'
-    });
-  }
-  
-  // GC
-  const gc = ((seq.match(/[GC]/g) || []).length / seq.length) * 100;
-  if (gc >= 30 && gc <= 52) {
-    explanations.push({
-      factor: 'GC Content',
-      reasoning: `Optimal GC content (${gc.toFixed(1)}%) for stable RISC loading and target binding.`,
-      impact: 'positive'
-    });
-  }
-  
-  // Species Specific
-  if (species === TargetSpecies.LEPIDOPTERA || species === TargetSpecies.COLEOPTERA) {
-    explanations.push({
-      factor: 'Species Alignment',
-      reasoning: `Parameters optimized for ${species} RNAi machinery sensitivity.`,
-      impact: 'positive'
-    });
-  }
-  
-  return explanations;
-}
+
 // Positions are 1-indexed as in the literature
 const REYNOLDS_POSITION_WEIGHTS: Record<number, Record<string, number>> = {
   1: { A: 0, T: 0, U: 0, G: -2, C: -2 },     // Position 1: Neutral, avoid G/C
@@ -839,8 +786,20 @@ export function predictEfficacy(
   }
   
   // ========== 11. SPECIES-SPECIFIC ADJUSTMENTS ==========
-  // Insect-specific rules (based on Tribolium/Lepidoptera studies)
-  if (species === TargetSpecies.LEPIDOPTERA || species === TargetSpecies.COLEOPTERA) {
+  // Advanced species adjustments based on genomic order preferences
+  const isLepidoptera = [
+    TargetSpecies.LEPIDOPTERA, TargetSpecies.SPODOPTERA, TargetSpecies.PLUTELLA, 
+    TargetSpecies.HELICOVERPA, TargetSpecies.MYTHIMNA, TargetSpecies.CHILO,
+    TargetSpecies.OSTRINIA, TargetSpecies.PECTINOPHORA, TargetSpecies.AGROTIS
+  ].includes(species);
+
+  const isColeoptera = [
+    TargetSpecies.COLEOPTERA, TargetSpecies.DIABROTICA, TargetSpecies.LEPTINOTARSA,
+    TargetSpecies.TRIBOLIUM, TargetSpecies.ANTHONOMUS, TargetSpecies.SITOPHILUS,
+    TargetSpecies.ORYZAEPHILUS
+  ].includes(species);
+
+  if (isLepidoptera || isColeoptera) {
     // Insect siRNA prefers higher GC in positions 9-14 for target binding
     let gc9to14 = 0;
     for (let i = 8; i < 14 && i < seqUpper.length; i++) {
@@ -1317,9 +1276,10 @@ function isValidKmer(kmer: string): boolean {
 
 export async function runPipelineWithBloom(
   pestSeq: string,
-  searchEngine: BloomBasedSearch,
+  searchEngine: BloomBasedSearch | MultiSpeciesEngine,
   threshold: number,
   species: TargetSpecies,
+  selectedDelivery: string = 'spc',
   onProgress?: (progress: number) => void
 ): Promise<{ candidates: Candidate[]; metrics: RejectionMetrics }> {
   const candidates: Candidate[] = [];
@@ -1332,10 +1292,12 @@ export async function runPipelineWithBloom(
   }
   
   for (let i = 0; i < scanLimit; i++) {
-    if (onProgress && i % 100 === 0) {
+    if (onProgress && i % 10 === 0) {
       onProgress(i / scanLimit);
-      // Yield to prevent UI freezing
-      await new Promise(resolve => setTimeout(resolve, 0));
+      // Yield more frequently
+      if (i % 50 === 0) {
+        await new Promise(resolve => setTimeout(resolve, 0));
+      }
     }
     
     const seq = pestSeq.slice(i, i + Config.SIRNA_LENGTH);
@@ -1354,7 +1316,8 @@ export async function runPipelineWithBloom(
       continue;
     }
     
-    if (safetyResult.safetyScore < 75) {
+    const safetyScore = 'overallSafetyScore' in safetyResult ? safetyResult.overallSafetyScore : safetyResult.safetyScore;
+    if (safetyScore < 75) {
       metrics.safety++;
       continue;
     }
@@ -1375,8 +1338,8 @@ export async function runPipelineWithBloom(
       continue;
     }
     
-    const analysis = safetyResult.safetyAnalysis;
-    const explanations = generateExplanations(seq, species, analysis, efficiency);
+    const analysis = 'combinedAnalysis' in safetyResult ? safetyResult.combinedAnalysis : safetyResult.safetyAnalysis;
+    const speciesScores = 'speciesScores' in safetyResult ? safetyResult.speciesScores : undefined;
     
     candidates.push({
       sequence: seq,
@@ -1386,8 +1349,9 @@ export async function runPipelineWithBloom(
       status: safetyResult.status,
       gcContent: features[0],
       matchLength: safetyResult.matchLength,
-      deliveryCompatibility: scoreDeliveryCompatibility(seq, 'spc'),
-      safetyScore: analysis.overallSafetyScore,
+      deliveryCompatibility: scoreDeliveryCompatibility(seq, selectedDelivery),
+      safetyScore: safetyScore,
+      speciesSafety: speciesScores,
       seedSequence: analysis.seedSequence,
       hasSeedMatch: analysis.hasSeedMatch,
       seedMatchCount: analysis.seedMatchCount,
@@ -1397,7 +1361,6 @@ export async function runPipelineWithBloom(
       hasPolyRun: analysis.hasPolyRun,
       riskFactors: analysis.riskFactors,
       safetyNotes: analysis.safetyNotes,
-      explanations,
     });
   }
   
@@ -1440,30 +1403,27 @@ export function analyzeFolding(seq: string): number {
 
 // Delivery compatibility scoring
 export function scoreDeliveryCompatibility(seq: string, deliveryId: string): number {
-  const systems: Record<string, { lengthRange: [number, number]; gcRange: [number, number] }> = {
-    spc: { lengthRange: [21, 25], gcRange: [35, 55] },
-    lipid: { lengthRange: [19, 23], gcRange: [30, 50] },
-    chitosan: { lengthRange: [20, 27], gcRange: [40, 60] },
-    naked: { lengthRange: [21, 21], gcRange: [30, 52] },
+  // Create a temporary candidate object to pass to the types.ts function
+  const tempCandidate: Candidate = {
+    sequence: seq,
+    position: 0,
+    efficiency: 0,
+    foldRisk: 0,
+    status: SafetyStatus.CLEARED,
+    gcContent: ((seq.match(/[GC]/g) || []).length / seq.length) * 100,
+    matchLength: 0,
+    safetyScore: 0,
   };
   
-  const system = systems[deliveryId] || systems.naked;
-  const gc = ((seq.match(/[GC]/g) || []).length / seq.length) * 100;
-  const len = seq.length;
+  // Find the delivery system by ID
+  const deliverySystem = DELIVERY_SYSTEMS.find(sys => sys.id === deliveryId);
   
-  let score = 100;
-  
-  // Length penalty
-  if (len < system.lengthRange[0] || len > system.lengthRange[1]) {
-    score -= 30;
+  if (!deliverySystem) {
+    // Default to the first delivery system if not found
+    return calculateDeliveryCompatibility(tempCandidate, DELIVERY_SYSTEMS[0]);
   }
   
-  // GC penalty
-  if (gc < system.gcRange[0] || gc > system.gcRange[1]) {
-    score -= Math.abs(gc - (system.gcRange[0] + system.gcRange[1]) / 2);
-  }
-  
-  return Math.max(0, score);
+  return calculateDeliveryCompatibility(tempCandidate, deliverySystem);
 }
 
 // ==========================================
@@ -1485,9 +1445,10 @@ export function scoreDeliveryCompatibility(seq: string, deliveryId: string): num
 
 export function runPipeline(
   pestSeq: string,
-  searchEngine: DeepTechSearch,
+  searchEngine: DeepTechSearch | MultiSpeciesEngine,
   threshold: number,
   species: TargetSpecies,
+  selectedDelivery: string = 'spc',
   onProgress?: (progress: number) => void
 ): { candidates: Candidate[]; metrics: RejectionMetrics } {
   const candidates: Candidate[] = [];
@@ -1500,7 +1461,7 @@ export function runPipeline(
   }
   
   for (let i = 0; i < scanLimit; i++) {
-    if (onProgress && i % 100 === 0) {
+    if (onProgress && i % 10 === 0) {
       onProgress(i / scanLimit);
     }
     
@@ -1514,14 +1475,7 @@ export function runPipeline(
     }
     
     // ========== STEP 1: COMPREHENSIVE SAFETY ANALYSIS ==========
-    // This performs multi-layer safety checking:
-    // - 15-mer exclusion firewall
-    // - Seed region (2-8) analysis
-    // - Extended seed (2-13) check
-    // - Palindrome detection
-    // - Biological exception rules (CpG, poly-runs, immune motifs)
     const safetyResult = searchEngine.checkSafety(seq);
-    const safetyAnalysis = safetyResult.safetyAnalysis;
     
     // REJECT if toxic (15-mer match)
     if (!safetyResult.isSafe) {
@@ -1529,8 +1483,8 @@ export function runPipeline(
       continue;
     }
     
-    // REJECT if safety score is below 75% (too risky for pollinator safety)
-    if (safetyAnalysis.overallSafetyScore < 75) {
+    const safetyScore = 'overallSafetyScore' in safetyResult ? safetyResult.overallSafetyScore : safetyResult.safetyScore;
+    if (safetyScore < 75) {
       metrics.safety++;
       continue;
     }
@@ -1543,7 +1497,6 @@ export function runPipeline(
     }
     
     // ========== STEP 3: EFFICACY PREDICTION ==========
-    // Using scientifically rigorous scoring based on Reynolds, Ui-Tei, and Amarzguioui rules
     const features = extractFeatures(seq);
     const efficiency = predictEfficacy(seq, species, foldRisk);
     
@@ -1552,8 +1505,8 @@ export function runPipeline(
       continue;
     }
     
-    const analysis = safetyResult.safetyAnalysis;
-    const explanations = generateExplanations(seq, species, analysis, efficiency);
+    const analysis = 'combinedAnalysis' in safetyResult ? safetyResult.combinedAnalysis : safetyResult.safetyAnalysis;
+    const speciesScores = 'speciesScores' in safetyResult ? safetyResult.speciesScores : undefined;
     
     // ========== CANDIDATE PASSED ALL FILTERS ==========
     candidates.push({
@@ -1564,19 +1517,18 @@ export function runPipeline(
       status: safetyResult.status,
       gcContent: features[0],
       matchLength: safetyResult.matchLength,
-      deliveryCompatibility: scoreDeliveryCompatibility(seq, 'spc'),
-      // Enhanced safety metrics
-      safetyScore: safetyAnalysis.overallSafetyScore,
-      seedSequence: safetyAnalysis.seedSequence,
-      hasSeedMatch: safetyAnalysis.hasSeedMatch,
-      seedMatchCount: safetyAnalysis.seedMatchCount,
-      hasPalindrome: safetyAnalysis.isPalindrome,
-      palindromeLength: safetyAnalysis.palindromeLength,
-      hasCpGMotif: safetyAnalysis.hasCpGMotif,
-      hasPolyRun: safetyAnalysis.hasPolyRun,
-      riskFactors: safetyAnalysis.riskFactors,
-      safetyNotes: safetyAnalysis.safetyNotes,
-      explanations,
+      deliveryCompatibility: scoreDeliveryCompatibility(seq, selectedDelivery),
+      safetyScore: safetyScore,
+      speciesSafety: speciesScores,
+      seedSequence: analysis.seedSequence,
+      hasSeedMatch: analysis.hasSeedMatch,
+      seedMatchCount: analysis.seedMatchCount,
+      hasPalindrome: analysis.isPalindrome,
+      palindromeLength: analysis.palindromeLength,
+      hasCpGMotif: analysis.hasCpGMotif,
+      hasPolyRun: analysis.hasPolyRun,
+      riskFactors: analysis.riskFactors,
+      safetyNotes: analysis.safetyNotes,
     });
   }
   
@@ -1588,6 +1540,257 @@ export const DEMO_PEST_SEQ = "ATGCGTGAGTGCATCTCCATCCACGTTGGCCAGGCTGGTGTCCAGATCGG
 
 export function getDemoBeeSeq(): string {
   return DEMO_PEST_SEQ.split('').reverse().join('');
+}
+
+// = : =========================================
+// NCBI GENBANK INTEGRATION
+// ==========================================
+
+/**
+ * Extract organism name from GenBank XML response
+ */
+function extractOrganismFromGenBank(xml: string): string {
+  const match = xml.match(/<GBSeq_organism>([^<]+)<\/GBSeq_organism>/);
+  return match ? match[1] : '';
+}
+
+/**
+ * Verify taxonomy matches expected species after fetching
+ */
+async function verifyTaxonomy(accession: string, expectedSpecies: string): Promise<{ valid: boolean; organism: string; warning?: string }> {
+  try {
+    // Fetch GenBank record to get taxonomy
+    const taxonomyUrl = `https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nuccore&id=${accession}&rettype=gb&retmode=xml`;
+    const response = await fetch(taxonomyUrl);
+    const xml = await response.text();
+    
+    const organism = extractOrganismFromGenBank(xml);
+    if (!organism) {
+      return { valid: false, organism: '', warning: 'Could not extract organism from GenBank record' };
+    }
+    
+    // Normalize and compare
+    const normalizedOrganism = organism.toLowerCase().replace(/[^a-z\s]/g, '');
+    const normalizedExpected = expectedSpecies.toLowerCase().replace(/[^a-z\s]/g, '');
+    
+    // Check if organism contains expected species name or vice versa
+    const isMatch = normalizedOrganism.includes(normalizedExpected) || normalizedExpected.includes(normalizedOrganism);
+    
+    if (!isMatch) {
+      return {
+        valid: false,
+        organism,
+        warning: `Taxonomy mismatch: Expected "${expectedSpecies}", but GenBank record shows "${organism}"`
+      };
+    }
+    
+    return { valid: true, organism };
+  } catch (error) {
+    console.warn('Taxonomy verification failed:', error);
+    return { valid: true, organism: '', warning: 'Taxonomy verification unavailable (network error)' };
+  }
+}
+
+/**
+ * Fetch genome from NCBI using E-utilities API
+ * Supports both Accession IDs and Scientific Names
+ * 
+ * NOTE: Direct browser requests to NCBI may fail due to CORS restrictions.
+ * For production deployment, consider using a backend proxy or pre-cached genomes.
+ */
+export async function fetchNCBIGenome(query: string, onProgress?: (msg: string) => void): Promise<string> {
+  try {
+    onProgress?.(`Searching NCBI for: ${query}...`);
+    
+    let term = query;
+    let expectedSpecies = query;
+    const isAssembly = query.startsWith('GCF_') || query.startsWith('GCA_');
+
+    if (isAssembly) {
+      onProgress?.(`Detected assembly accession. Resolving to genomic sequence...`);
+      // Use E-search on assembly DB to get species name
+      const assemblySearch = `https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=assembly&term=${encodeURIComponent(query)}&retmode=json`;
+      
+      try {
+        const aRes = await fetch(assemblySearch);
+        if (!aRes.ok) throw new Error(`Assembly search failed: ${aRes.status}`);
+        const aData = await aRes.json();
+        
+        if (aData.esearchresult.idlist && aData.esearchresult.idlist.length > 0) {
+          const assemblyId = aData.esearchresult.idlist[0];
+          const summaryUrl = `https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=assembly&id=${assemblyId}&retmode=json`;
+          const sRes = await fetch(summaryUrl);
+          if (!sRes.ok) throw new Error(`Assembly summary failed: ${sRes.status}`);
+          const sData = await sRes.json();
+          
+          if (sData.result && sData.result[assemblyId]) {
+            const species = sData.result[assemblyId].speciesname || sData.result[assemblyId].organism;
+            expectedSpecies = species;
+            onProgress?.(`Found assembly for ${species}. Searching for RefSeq genome...`);
+            // Redirect to nucleotide search for this species
+            term = `${species}[Organism] AND (complete genome[Title] OR chromosome[Title] OR "primary assembly"[Title])`;
+          }
+        }
+      } catch (corsError) {
+        throw new Error('NCBI API access blocked by browser CORS policy. Please use the pre-loaded Non-Target Panel instead, or upload your own genome file.');
+      }
+    }
+
+    // Step 1: Search for UID in Nucleotide
+    const searchUrl = `https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=nucleotide&term=${encodeURIComponent(term)}&retmode=json&usehistory=y`;
+    
+    let searchRes, searchData, id;
+    try {
+      searchRes = await fetch(searchUrl);
+      if (!searchRes.ok) throw new Error(`Search failed: ${searchRes.status}`);
+      searchData = await searchRes.json();
+      id = searchData.esearchresult?.idlist?.[0];
+    } catch (corsError) {
+      throw new Error('NCBI API access blocked by browser CORS policy. Please use the pre-loaded Non-Target Panel instead, or upload your own genome file.');
+    }
+
+    // Fallback to original query if optimized term fails
+    if (!id && term !== query) {
+      onProgress?.(`Optimized search failed. Trying direct search for "${query}"...`);
+      try {
+        const fallbackUrl = `https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=nucleotide&term=${encodeURIComponent(query)}&retmode=json`;
+        const fallbackRes = await fetch(fallbackUrl);
+        if (!fallbackRes.ok) throw new Error(`Fallback search failed: ${fallbackRes.status}`);
+        const fallbackData = await fallbackRes.json();
+        id = fallbackData.esearchresult?.idlist?.[0];
+      } catch (corsError) {
+        throw new Error('NCBI API access blocked by browser CORS policy. Please use the pre-loaded Non-Target Panel instead, or upload your own genome file.');
+      }
+    }
+    
+    if (!id) {
+      throw new Error(`No genomic sequences found for "${query}". Try searching by Scientific Name (e.g. "Apis mellifera") or use the pre-loaded panel.`);
+    }
+    
+    onProgress?.(`Found sequence ID: ${id}. Fetching genomic data...`);
+    
+    // Step 2: Fetch FASTA
+    const fetchUrl = `https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nucleotide&id=${id}&rettype=fasta&retmode=text`;
+    const fetchRes = await fetch(fetchUrl);
+    
+    if (!fetchRes.ok) {
+      throw new Error(`NCBI Fetch failed with status: ${fetchRes.status}`);
+    }
+    
+    const fasta = await fetchRes.text();
+    const sequence = parseFasta(fasta);
+    
+    if (!sequence || sequence.length < 50) {
+      throw new Error("Retrieved sequence is invalid or empty.");
+    }
+    
+    // Step 3: Verify Taxonomy (if we have an accession)
+    if (isAssembly || /^[A-Z]{1,2}_?[0-9.]+$/.test(query)) {
+      onProgress?.(`Verifying taxonomy...`);
+      const verification = await verifyTaxonomy(id, expectedSpecies);
+      
+      if (!verification.valid && verification.warning) {
+        console.warn('Taxonomy Verification:', verification.warning);
+        onProgress?.(`⚠️ ${verification.warning}`);
+        // Still return sequence but with warning
+      } else if (verification.valid && verification.organism) {
+        onProgress?.(`✓ Taxonomy verified: ${verification.organism}`);
+      }
+    }
+    
+    onProgress?.(`Successfully retrieved ${Math.round(sequence.length / 1000)}kb from NCBI.`);
+    return sequence;
+  } catch (error) {
+    console.error('NCBI Fetch Error:', error);
+    throw new Error(`NCBI Fetch Failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+// ==========================================
+// MULTI-SPECIES VALIDATION ENGINE
+// ==========================================
+
+export interface MultiSpeciesSafetyResult {
+  isSafe: boolean;
+  overallSafetyScore: number;
+  weightedSafetyScore: number; // Phylogenetically weighted score
+  speciesScores: Record<string, number>;
+  status: SafetyStatus;
+  matchLength: number;
+  combinedAnalysis: SafetyAnalysis;
+}
+
+export class MultiSpeciesEngine {
+  private engines: Record<string, DeepTechSearch | BloomBasedSearch> = {};
+  private phyloWeights: Record<string, number> = {};
+  
+  constructor(
+    speciesData: { id: string; engine: DeepTechSearch | BloomBasedSearch; phyloWeight?: number }[]
+  ) {
+    speciesData.forEach(({ id, engine, phyloWeight }) => {
+      this.engines[id] = engine;
+      this.phyloWeights[id] = phyloWeight ?? 1.0; // Default weight if not provided
+    });
+  }
+  
+  checkSafety(candidateSeq: string): MultiSpeciesSafetyResult {
+    const speciesScores: Record<string, number> = {};
+    let isSafe = true;
+    let minSafetyScore = 100;
+    let maxMatchLength = 0;
+    let worstStatus = SafetyStatus.CLEARED;
+    
+    // Weighted score calculation
+    let weightedSum = 0;
+    let weightSum = 0;
+    
+    // Perform safety check against ALL enabled species
+    Object.entries(this.engines).forEach(([id, engine]) => {
+      const result = engine.checkSafety(candidateSeq);
+      const weight = this.phyloWeights[id] || 1.0;
+      
+      speciesScores[id] = result.safetyScore;
+      weightedSum += result.safetyScore * weight;
+      weightSum += weight;
+      
+      if (!result.isSafe) isSafe = false;
+      if (result.safetyScore < minSafetyScore) minSafetyScore = result.safetyScore;
+      if (result.matchLength > maxMatchLength) maxMatchLength = result.matchLength;
+      
+      // Upgrade status if worse (weighted by phylogenetic importance)
+      if (result.status === SafetyStatus.TOXIC) {
+        worstStatus = SafetyStatus.TOXIC;
+      } else if (result.status === SafetyStatus.WARNING_SEED && worstStatus !== SafetyStatus.TOXIC) {
+        // Only escalate to warning if it's a high-weight species (>0.8)
+        if (weight > 0.8 || worstStatus === SafetyStatus.CLEARED) {
+          worstStatus = SafetyStatus.WARNING_SEED;
+        }
+      }
+    });
+    
+    // Calculate phylogenetically weighted safety score
+    const weightedSafetyScore = weightSum > 0 ? weightedSum / weightSum : minSafetyScore;
+    
+    // Use the first engine's analysis as base, but update metrics
+    const baseEngine = Object.values(this.engines)[0];
+    const baseAnalysis = baseEngine.checkSafety(candidateSeq).safetyAnalysis;
+    
+    return {
+      isSafe,
+      overallSafetyScore: minSafetyScore, // Worst-case score
+      weightedSafetyScore,                 // Phylogenetically weighted score
+      speciesScores,
+      status: worstStatus,
+      matchLength: maxMatchLength,
+      combinedAnalysis: {
+        ...baseAnalysis,
+        overallSafetyScore: weightedSafetyScore, // Use weighted score in analysis
+        isSafe,
+        status: worstStatus,
+        maxContiguousMatch: maxMatchLength,
+      }
+    };
+  }
 }
 
 // Validation utilities
