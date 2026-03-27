@@ -10,7 +10,11 @@ from bloom_filter import get_or_build_index, reset_index
 from models import db, TargetSequenceLog
 
 app = Flask(__name__)
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///helix_zero.db"
+# Vercel serverless filesystem is read-only except /tmp.
+if os.getenv("VERCEL"):
+    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:////tmp/helix_zero.db"
+else:
+    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///helix_zero.db"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db.init_app(app)
 
