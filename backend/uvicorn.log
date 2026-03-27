@@ -1,0 +1,29 @@
+INFO:     Started server process [16184]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+[RiNALMo] PyTorch loaded successfully
+[RiNALMo] Model initialized: 191,297 parameters
+[RiNALMo] Device: cpu
+[Helix-Zero] RiNALMo-v2 loaded: initialized
+INFO:     127.0.0.1:59569 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59573 - "POST /predict/efficacy/batch HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58309 - "POST /predict/efficacy/batch HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58881 - "POST /predict/efficacy/batch HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52751 - "POST /predict/efficacy/batch HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64553 - "POST /predict/efficacy/batch HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57424 - "POST /predict/efficacy/batch HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61374 - "POST /predict/efficacy/batch HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57596 - "POST /predict/efficacy/batch HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55912 - "POST /predict/efficacy/batch HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64731 - "POST /predict/efficacy/batch HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60939 - "POST /predict/efficacy/batch HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53495 - "POST /predict/efficacy/batch HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63588 - "POST /predict/efficacy/batch HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51945 - "POST /predict/efficacy/batch HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49675 - "POST /predict/efficacy/batch HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49821 - "POST /predict/efficacy/batch HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62340 - "POST /predict/efficacy/batch HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61559 - "POST /predict/efficacy/batch HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61083 - "POST /predict/efficacy/batch HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55072 - "POST /predict/efficacy/batch HTTP/1.1" 200 OK

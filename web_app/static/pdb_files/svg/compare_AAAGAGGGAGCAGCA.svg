@@ -1,0 +1,417 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 500" 
+            style="background-color: #1A202C; border-radius: 8px;">
+            <defs>
+            <!-- Gradients -->
+            <linearGradient id="nativeGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" style="stop-color:#4A5568;stop-opacity:1" />
+                <stop offset="100%" style="stop-color:#2D3748;stop-opacity:1" />
+            </linearGradient>
+            <linearGradient id="omeGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" style="stop-color:#4299E1;stop-opacity:1" />
+                <stop offset="100%" style="stop-color:#3182CE;stop-opacity:1" />
+            </linearGradient>
+            <linearGradient id="fGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" style="stop-color:#ED8936;stop-opacity:1" />
+                <stop offset="100%" style="stop-color:#DD6B20;stop-opacity:1" />
+            </linearGradient>
+            <linearGradient id="psGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" style="stop-color:#9F7AEA;stop-opacity:1" />
+                <stop offset="100%" style="stop-color:#805AD5;stop-opacity:1" />
+            </linearGradient>
+            
+            <!-- Filters -->
+            <filter id="glow">
+                <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+                <feMerge>
+                    <feMergeNode in="coloredBlur"/>
+                    <feMergeNode in="SourceGraphic"/>
+                </feMerge>
+            </filter>
+            <filter id="shadow">
+                <feDropShadow dx="2" dy="2" stdDeviation="2" flood-opacity="0.3"/>
+            </filter>
+        </defs>
+            
+            <text x="450" y="25" text-anchor="middle" 
+            font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#E2E8F0">
+            RNA Chemical Modification Comparison
+        </text>
+        <text x="450" y="45" text-anchor="middle" 
+                font-family="Arial, sans-serif" font-size="11" fill="#A0AEC0">
+                siRNA: AAAGAGGGAGCAGCA (15 nt)
+            </text>
+            
+            <rect x="10" y="55" width="430" height="150" 
+            fill="#2D3748" stroke="#4A5568" rx="5"/>
+        <rect x="460" y="55" width="430" height="150" 
+            fill="#2D3748" stroke="#4A5568" rx="5"/>
+        <text x="225" y="75" text-anchor="middle" 
+            font-family="Arial" font-size="12" font-weight="bold" fill="#48BB78">NATIVE (Unmodified)</text>
+        <text x="675" y="75" text-anchor="middle" 
+            font-family="Arial" font-size="12" font-weight="bold" fill="#DD6B20">MODIFIED</text>
+        <circle cx="70.0" cy="120" r="12" fill="#38A169" 
+            stroke="#276749" stroke-width="1.5"/>
+                <text x="70.0" y="124" text-anchor="middle" 
+            font-family="Arial" font-size="10" font-weight="bold" fill="white">A</text>
+        <circle cx="70.0" cy="220" r="12" fill="#E53E3E" 
+            stroke="#C53030" stroke-width="1.5"/>
+                <text x="70.0" y="224" text-anchor="middle" 
+            font-family="Arial" font-size="10" font-weight="bold" fill="white">U</text>
+        <line x1="70.0" y1="132" x2="70.0" y2="208" 
+                stroke="#718096" stroke-width="1" stroke-dasharray="2,2" opacity="0.5"/>
+        <circle cx="500.0" cy="120" r="12" fill="#38A169" 
+            stroke="#276749" stroke-width="1.5"/>
+                <text x="500.0" y="124" text-anchor="middle" 
+            font-family="Arial" font-size="10" font-weight="bold" fill="white">A</text>
+                <circle cx="510.0" cy="110" r="7" 
+                fill="#DD6B20" stroke="#C05621" stroke-width="1">
+                <title>2'-Fluoro (2'-F)</title>
+            </circle>
+                <text x="510.0" y="113" text-anchor="middle" 
+                font-family="Arial" font-size="7" font-weight="bold" fill="white">F</text>
+        <circle cx="500.0" cy="220" r="12" fill="#E53E3E" 
+            stroke="#C53030" stroke-width="1.5"/>
+                <text x="500.0" y="224" text-anchor="middle" 
+            font-family="Arial" font-size="10" font-weight="bold" fill="white">U</text>
+        <line x1="500.0" y1="132" x2="500.0" y2="208" 
+                stroke="#718096" stroke-width="1" stroke-dasharray="2,2" opacity="0.5"/>
+        <circle cx="96.42857142857143" cy="120" r="12" fill="#38A169" 
+            stroke="#276749" stroke-width="1.5"/>
+                <text x="96.42857142857143" y="124" text-anchor="middle" 
+            font-family="Arial" font-size="10" font-weight="bold" fill="white">A</text>
+        <circle cx="96.42857142857143" cy="220" r="12" fill="#E53E3E" 
+            stroke="#C53030" stroke-width="1.5"/>
+                <text x="96.42857142857143" y="224" text-anchor="middle" 
+            font-family="Arial" font-size="10" font-weight="bold" fill="white">U</text>
+        <line x1="96.42857142857143" y1="132" x2="96.42857142857143" y2="208" 
+                stroke="#718096" stroke-width="1" stroke-dasharray="2,2" opacity="0.5"/>
+        <circle cx="526.4285714285714" cy="120" r="12" fill="#38A169" 
+            stroke="#276749" stroke-width="1.5"/>
+                <text x="526.4285714285714" y="124" text-anchor="middle" 
+            font-family="Arial" font-size="10" font-weight="bold" fill="white">A</text>
+        <circle cx="526.4285714285714" cy="220" r="12" fill="#E53E3E" 
+            stroke="#C53030" stroke-width="1.5"/>
+                <text x="526.4285714285714" y="224" text-anchor="middle" 
+            font-family="Arial" font-size="10" font-weight="bold" fill="white">U</text>
+        <line x1="526.4285714285714" y1="132" x2="526.4285714285714" y2="208" 
+                stroke="#718096" stroke-width="1" stroke-dasharray="2,2" opacity="0.5"/>
+        <circle cx="122.85714285714286" cy="120" r="12" fill="#38A169" 
+            stroke="#276749" stroke-width="1.5"/>
+                <text x="122.85714285714286" y="124" text-anchor="middle" 
+            font-family="Arial" font-size="10" font-weight="bold" fill="white">A</text>
+        <circle cx="122.85714285714286" cy="220" r="12" fill="#E53E3E" 
+            stroke="#C53030" stroke-width="1.5"/>
+                <text x="122.85714285714286" y="224" text-anchor="middle" 
+            font-family="Arial" font-size="10" font-weight="bold" fill="white">U</text>
+        <line x1="122.85714285714286" y1="132" x2="122.85714285714286" y2="208" 
+                stroke="#718096" stroke-width="1" stroke-dasharray="2,2" opacity="0.5"/>
+        <circle cx="552.8571428571429" cy="120" r="12" fill="#38A169" 
+            stroke="#276749" stroke-width="1.5"/>
+                <text x="552.8571428571429" y="124" text-anchor="middle" 
+            font-family="Arial" font-size="10" font-weight="bold" fill="white">A</text>
+                <circle cx="562.8571428571429" cy="110" r="7" 
+                fill="#DD6B20" stroke="#C05621" stroke-width="1">
+                <title>2'-Fluoro (2'-F)</title>
+            </circle>
+                <text x="562.8571428571429" y="113" text-anchor="middle" 
+                font-family="Arial" font-size="7" font-weight="bold" fill="white">F</text>
+        <circle cx="552.8571428571429" cy="220" r="12" fill="#E53E3E" 
+            stroke="#C53030" stroke-width="1.5"/>
+                <text x="552.8571428571429" y="224" text-anchor="middle" 
+            font-family="Arial" font-size="10" font-weight="bold" fill="white">U</text>
+        <line x1="552.8571428571429" y1="132" x2="552.8571428571429" y2="208" 
+                stroke="#718096" stroke-width="1" stroke-dasharray="2,2" opacity="0.5"/>
+        <circle cx="149.28571428571428" cy="120" r="12" fill="#D69E2E" 
+            stroke="#B7791F" stroke-width="1.5"/>
+                <text x="149.28571428571428" y="124" text-anchor="middle" 
+            font-family="Arial" font-size="10" font-weight="bold" fill="white">G</text>
+        <circle cx="149.28571428571428" cy="220" r="12" fill="#3182CE" 
+            stroke="#2B6CB0" stroke-width="1.5"/>
+                <text x="149.28571428571428" y="224" text-anchor="middle" 
+            font-family="Arial" font-size="10" font-weight="bold" fill="white">C</text>
+        <line x1="149.28571428571428" y1="132" x2="149.28571428571428" y2="208" 
+                stroke="#718096" stroke-width="1" stroke-dasharray="2,2" opacity="0.5"/>
+        <circle cx="579.2857142857142" cy="120" r="12" fill="#D69E2E" 
+            stroke="#B7791F" stroke-width="1.5"/>
+                <text x="579.2857142857142" y="124" text-anchor="middle" 
+            font-family="Arial" font-size="10" font-weight="bold" fill="white">G</text>
+                <circle cx="589.2857142857142" cy="110" r="7" 
+                fill="#DD6B20" stroke="#C05621" stroke-width="1">
+                <title>2'-Fluoro (2'-F)</title>
+            </circle>
+                <text x="589.2857142857142" y="113" text-anchor="middle" 
+                font-family="Arial" font-size="7" font-weight="bold" fill="white">F</text>
+        <circle cx="579.2857142857142" cy="220" r="12" fill="#3182CE" 
+            stroke="#2B6CB0" stroke-width="1.5"/>
+                <text x="579.2857142857142" y="224" text-anchor="middle" 
+            font-family="Arial" font-size="10" font-weight="bold" fill="white">C</text>
+        <line x1="579.2857142857142" y1="132" x2="579.2857142857142" y2="208" 
+                stroke="#718096" stroke-width="1" stroke-dasharray="2,2" opacity="0.5"/>
+        <circle cx="175.71428571428572" cy="120" r="12" fill="#38A169" 
+            stroke="#276749" stroke-width="1.5"/>
+                <text x="175.71428571428572" y="124" text-anchor="middle" 
+            font-family="Arial" font-size="10" font-weight="bold" fill="white">A</text>
+        <circle cx="175.71428571428572" cy="220" r="12" fill="#E53E3E" 
+            stroke="#C53030" stroke-width="1.5"/>
+                <text x="175.71428571428572" y="224" text-anchor="middle" 
+            font-family="Arial" font-size="10" font-weight="bold" fill="white">U</text>
+        <line x1="175.71428571428572" y1="132" x2="175.71428571428572" y2="208" 
+                stroke="#718096" stroke-width="1" stroke-dasharray="2,2" opacity="0.5"/>
+        <circle cx="605.7142857142857" cy="120" r="12" fill="#38A169" 
+            stroke="#276749" stroke-width="1.5"/>
+                <text x="605.7142857142857" y="124" text-anchor="middle" 
+            font-family="Arial" font-size="10" font-weight="bold" fill="white">A</text>
+        <circle cx="605.7142857142857" cy="220" r="12" fill="#E53E3E" 
+            stroke="#C53030" stroke-width="1.5"/>
+                <text x="605.7142857142857" y="224" text-anchor="middle" 
+            font-family="Arial" font-size="10" font-weight="bold" fill="white">U</text>
+        <line x1="605.7142857142857" y1="132" x2="605.7142857142857" y2="208" 
+                stroke="#718096" stroke-width="1" stroke-dasharray="2,2" opacity="0.5"/>
+        <circle cx="202.14285714285714" cy="120" r="12" fill="#D69E2E" 
+            stroke="#B7791F" stroke-width="1.5"/>
+                <text x="202.14285714285714" y="124" text-anchor="middle" 
+            font-family="Arial" font-size="10" font-weight="bold" fill="white">G</text>
+        <circle cx="202.14285714285714" cy="220" r="12" fill="#3182CE" 
+            stroke="#2B6CB0" stroke-width="1.5"/>
+                <text x="202.14285714285714" y="224" text-anchor="middle" 
+            font-family="Arial" font-size="10" font-weight="bold" fill="white">C</text>
+        <line x1="202.14285714285714" y1="132" x2="202.14285714285714" y2="208" 
+                stroke="#718096" stroke-width="1" stroke-dasharray="2,2" opacity="0.5"/>
+        <circle cx="632.1428571428571" cy="120" r="12" fill="#D69E2E" 
+            stroke="#B7791F" stroke-width="1.5"/>
+                <text x="632.1428571428571" y="124" text-anchor="middle" 
+            font-family="Arial" font-size="10" font-weight="bold" fill="white">G</text>
+        <circle cx="632.1428571428571" cy="220" r="12" fill="#3182CE" 
+            stroke="#2B6CB0" stroke-width="1.5"/>
+                <text x="632.1428571428571" y="224" text-anchor="middle" 
+            font-family="Arial" font-size="10" font-weight="bold" fill="white">C</text>
+        <line x1="632.1428571428571" y1="132" x2="632.1428571428571" y2="208" 
+                stroke="#718096" stroke-width="1" stroke-dasharray="2,2" opacity="0.5"/>
+        <circle cx="228.57142857142856" cy="120" r="12" fill="#D69E2E" 
+            stroke="#B7791F" stroke-width="1.5"/>
+                <text x="228.57142857142856" y="124" text-anchor="middle" 
+            font-family="Arial" font-size="10" font-weight="bold" fill="white">G</text>
+        <circle cx="228.57142857142856" cy="220" r="12" fill="#3182CE" 
+            stroke="#2B6CB0" stroke-width="1.5"/>
+                <text x="228.57142857142856" y="224" text-anchor="middle" 
+            font-family="Arial" font-size="10" font-weight="bold" fill="white">C</text>
+        <line x1="228.57142857142856" y1="132" x2="228.57142857142856" y2="208" 
+                stroke="#718096" stroke-width="1" stroke-dasharray="2,2" opacity="0.5"/>
+        <circle cx="658.5714285714286" cy="120" r="12" fill="#D69E2E" 
+            stroke="#B7791F" stroke-width="1.5"/>
+                <text x="658.5714285714286" y="124" text-anchor="middle" 
+            font-family="Arial" font-size="10" font-weight="bold" fill="white">G</text>
+        <circle cx="658.5714285714286" cy="220" r="12" fill="#3182CE" 
+            stroke="#2B6CB0" stroke-width="1.5"/>
+                <text x="658.5714285714286" y="224" text-anchor="middle" 
+            font-family="Arial" font-size="10" font-weight="bold" fill="white">C</text>
+        <line x1="658.5714285714286" y1="132" x2="658.5714285714286" y2="208" 
+                stroke="#718096" stroke-width="1" stroke-dasharray="2,2" opacity="0.5"/>
+        <circle cx="255.0" cy="120" r="12" fill="#D69E2E" 
+            stroke="#B7791F" stroke-width="1.5"/>
+                <text x="255.0" y="124" text-anchor="middle" 
+            font-family="Arial" font-size="10" font-weight="bold" fill="white">G</text>
+        <circle cx="255.0" cy="220" r="12" fill="#3182CE" 
+            stroke="#2B6CB0" stroke-width="1.5"/>
+                <text x="255.0" y="224" text-anchor="middle" 
+            font-family="Arial" font-size="10" font-weight="bold" fill="white">C</text>
+        <line x1="255.0" y1="132" x2="255.0" y2="208" 
+                stroke="#718096" stroke-width="1" stroke-dasharray="2,2" opacity="0.5"/>
+        <circle cx="685.0" cy="120" r="12" fill="#D69E2E" 
+            stroke="#B7791F" stroke-width="1.5"/>
+                <text x="685.0" y="124" text-anchor="middle" 
+            font-family="Arial" font-size="10" font-weight="bold" fill="white">G</text>
+        <circle cx="685.0" cy="220" r="12" fill="#3182CE" 
+            stroke="#2B6CB0" stroke-width="1.5"/>
+                <text x="685.0" y="224" text-anchor="middle" 
+            font-family="Arial" font-size="10" font-weight="bold" fill="white">C</text>
+        <line x1="685.0" y1="132" x2="685.0" y2="208" 
+                stroke="#718096" stroke-width="1" stroke-dasharray="2,2" opacity="0.5"/>
+        <circle cx="281.42857142857144" cy="120" r="12" fill="#38A169" 
+            stroke="#276749" stroke-width="1.5"/>
+                <text x="281.42857142857144" y="124" text-anchor="middle" 
+            font-family="Arial" font-size="10" font-weight="bold" fill="white">A</text>
+        <circle cx="281.42857142857144" cy="220" r="12" fill="#E53E3E" 
+            stroke="#C53030" stroke-width="1.5"/>
+                <text x="281.42857142857144" y="224" text-anchor="middle" 
+            font-family="Arial" font-size="10" font-weight="bold" fill="white">U</text>
+        <line x1="281.42857142857144" y1="132" x2="281.42857142857144" y2="208" 
+                stroke="#718096" stroke-width="1" stroke-dasharray="2,2" opacity="0.5"/>
+        <circle cx="711.4285714285714" cy="120" r="12" fill="#38A169" 
+            stroke="#276749" stroke-width="1.5"/>
+                <text x="711.4285714285714" y="124" text-anchor="middle" 
+            font-family="Arial" font-size="10" font-weight="bold" fill="white">A</text>
+        <circle cx="711.4285714285714" cy="220" r="12" fill="#E53E3E" 
+            stroke="#C53030" stroke-width="1.5"/>
+                <text x="711.4285714285714" y="224" text-anchor="middle" 
+            font-family="Arial" font-size="10" font-weight="bold" fill="white">U</text>
+        <line x1="711.4285714285714" y1="132" x2="711.4285714285714" y2="208" 
+                stroke="#718096" stroke-width="1" stroke-dasharray="2,2" opacity="0.5"/>
+        <circle cx="307.85714285714283" cy="120" r="12" fill="#D69E2E" 
+            stroke="#B7791F" stroke-width="1.5"/>
+                <text x="307.85714285714283" y="124" text-anchor="middle" 
+            font-family="Arial" font-size="10" font-weight="bold" fill="white">G</text>
+        <circle cx="307.85714285714283" cy="220" r="12" fill="#3182CE" 
+            stroke="#2B6CB0" stroke-width="1.5"/>
+                <text x="307.85714285714283" y="224" text-anchor="middle" 
+            font-family="Arial" font-size="10" font-weight="bold" fill="white">C</text>
+        <line x1="307.85714285714283" y1="132" x2="307.85714285714283" y2="208" 
+                stroke="#718096" stroke-width="1" stroke-dasharray="2,2" opacity="0.5"/>
+        <circle cx="737.8571428571429" cy="120" r="12" fill="#D69E2E" 
+            stroke="#B7791F" stroke-width="1.5"/>
+                <text x="737.8571428571429" y="124" text-anchor="middle" 
+            font-family="Arial" font-size="10" font-weight="bold" fill="white">G</text>
+        <circle cx="737.8571428571429" cy="220" r="12" fill="#3182CE" 
+            stroke="#2B6CB0" stroke-width="1.5"/>
+                <text x="737.8571428571429" y="224" text-anchor="middle" 
+            font-family="Arial" font-size="10" font-weight="bold" fill="white">C</text>
+        <line x1="737.8571428571429" y1="132" x2="737.8571428571429" y2="208" 
+                stroke="#718096" stroke-width="1" stroke-dasharray="2,2" opacity="0.5"/>
+        <circle cx="334.2857142857143" cy="120" r="12" fill="#3182CE" 
+            stroke="#2B6CB0" stroke-width="1.5"/>
+                <text x="334.2857142857143" y="124" text-anchor="middle" 
+            font-family="Arial" font-size="10" font-weight="bold" fill="white">C</text>
+        <circle cx="334.2857142857143" cy="220" r="12" fill="#D69E2E" 
+            stroke="#B7791F" stroke-width="1.5"/>
+                <text x="334.2857142857143" y="224" text-anchor="middle" 
+            font-family="Arial" font-size="10" font-weight="bold" fill="white">G</text>
+        <line x1="334.2857142857143" y1="132" x2="334.2857142857143" y2="208" 
+                stroke="#718096" stroke-width="1" stroke-dasharray="2,2" opacity="0.5"/>
+        <circle cx="764.2857142857142" cy="120" r="12" fill="#3182CE" 
+            stroke="#2B6CB0" stroke-width="1.5"/>
+                <text x="764.2857142857142" y="124" text-anchor="middle" 
+            font-family="Arial" font-size="10" font-weight="bold" fill="white">C</text>
+        <circle cx="764.2857142857142" cy="220" r="12" fill="#D69E2E" 
+            stroke="#B7791F" stroke-width="1.5"/>
+                <text x="764.2857142857142" y="224" text-anchor="middle" 
+            font-family="Arial" font-size="10" font-weight="bold" fill="white">G</text>
+        <line x1="764.2857142857142" y1="132" x2="764.2857142857142" y2="208" 
+                stroke="#718096" stroke-width="1" stroke-dasharray="2,2" opacity="0.5"/>
+        <circle cx="360.7142857142857" cy="120" r="12" fill="#38A169" 
+            stroke="#276749" stroke-width="1.5"/>
+                <text x="360.7142857142857" y="124" text-anchor="middle" 
+            font-family="Arial" font-size="10" font-weight="bold" fill="white">A</text>
+        <circle cx="360.7142857142857" cy="220" r="12" fill="#E53E3E" 
+            stroke="#C53030" stroke-width="1.5"/>
+                <text x="360.7142857142857" y="224" text-anchor="middle" 
+            font-family="Arial" font-size="10" font-weight="bold" fill="white">U</text>
+        <line x1="360.7142857142857" y1="132" x2="360.7142857142857" y2="208" 
+                stroke="#718096" stroke-width="1" stroke-dasharray="2,2" opacity="0.5"/>
+        <circle cx="790.7142857142858" cy="120" r="12" fill="#38A169" 
+            stroke="#276749" stroke-width="1.5"/>
+                <text x="790.7142857142858" y="124" text-anchor="middle" 
+            font-family="Arial" font-size="10" font-weight="bold" fill="white">A</text>
+        <circle cx="790.7142857142858" cy="220" r="12" fill="#E53E3E" 
+            stroke="#C53030" stroke-width="1.5"/>
+                <text x="790.7142857142858" y="224" text-anchor="middle" 
+            font-family="Arial" font-size="10" font-weight="bold" fill="white">U</text>
+        <line x1="790.7142857142858" y1="132" x2="790.7142857142858" y2="208" 
+                stroke="#718096" stroke-width="1" stroke-dasharray="2,2" opacity="0.5"/>
+        <circle cx="387.1428571428571" cy="120" r="12" fill="#D69E2E" 
+            stroke="#B7791F" stroke-width="1.5"/>
+                <text x="387.1428571428571" y="124" text-anchor="middle" 
+            font-family="Arial" font-size="10" font-weight="bold" fill="white">G</text>
+        <circle cx="387.1428571428571" cy="220" r="12" fill="#3182CE" 
+            stroke="#2B6CB0" stroke-width="1.5"/>
+                <text x="387.1428571428571" y="224" text-anchor="middle" 
+            font-family="Arial" font-size="10" font-weight="bold" fill="white">C</text>
+        <line x1="387.1428571428571" y1="132" x2="387.1428571428571" y2="208" 
+                stroke="#718096" stroke-width="1" stroke-dasharray="2,2" opacity="0.5"/>
+        <circle cx="817.1428571428571" cy="120" r="12" fill="#D69E2E" 
+            stroke="#B7791F" stroke-width="1.5"/>
+                <text x="817.1428571428571" y="124" text-anchor="middle" 
+            font-family="Arial" font-size="10" font-weight="bold" fill="white">G</text>
+        <circle cx="817.1428571428571" cy="220" r="12" fill="#3182CE" 
+            stroke="#2B6CB0" stroke-width="1.5"/>
+                <text x="817.1428571428571" y="224" text-anchor="middle" 
+            font-family="Arial" font-size="10" font-weight="bold" fill="white">C</text>
+        <line x1="817.1428571428571" y1="132" x2="817.1428571428571" y2="208" 
+                stroke="#718096" stroke-width="1" stroke-dasharray="2,2" opacity="0.5"/>
+        <circle cx="413.57142857142856" cy="120" r="12" fill="#3182CE" 
+            stroke="#2B6CB0" stroke-width="1.5"/>
+                <text x="413.57142857142856" y="124" text-anchor="middle" 
+            font-family="Arial" font-size="10" font-weight="bold" fill="white">C</text>
+        <circle cx="413.57142857142856" cy="220" r="12" fill="#D69E2E" 
+            stroke="#B7791F" stroke-width="1.5"/>
+                <text x="413.57142857142856" y="224" text-anchor="middle" 
+            font-family="Arial" font-size="10" font-weight="bold" fill="white">G</text>
+        <line x1="413.57142857142856" y1="132" x2="413.57142857142856" y2="208" 
+                stroke="#718096" stroke-width="1" stroke-dasharray="2,2" opacity="0.5"/>
+        <circle cx="843.5714285714286" cy="120" r="12" fill="#3182CE" 
+            stroke="#2B6CB0" stroke-width="1.5"/>
+                <text x="843.5714285714286" y="124" text-anchor="middle" 
+            font-family="Arial" font-size="10" font-weight="bold" fill="white">C</text>
+                <circle cx="853.5714285714286" cy="110" r="7" 
+                fill="#DD6B20" stroke="#C05621" stroke-width="1">
+                <title>2'-Fluoro (2'-F)</title>
+            </circle>
+                <text x="853.5714285714286" y="113" text-anchor="middle" 
+                font-family="Arial" font-size="7" font-weight="bold" fill="white">F</text>
+        <circle cx="843.5714285714286" cy="220" r="12" fill="#D69E2E" 
+            stroke="#B7791F" stroke-width="1.5"/>
+                <text x="843.5714285714286" y="224" text-anchor="middle" 
+            font-family="Arial" font-size="10" font-weight="bold" fill="white">G</text>
+        <line x1="843.5714285714286" y1="132" x2="843.5714285714286" y2="208" 
+                stroke="#718096" stroke-width="1" stroke-dasharray="2,2" opacity="0.5"/>
+        <circle cx="440.0" cy="120" r="12" fill="#38A169" 
+            stroke="#276749" stroke-width="1.5"/>
+                <text x="440.0" y="124" text-anchor="middle" 
+            font-family="Arial" font-size="10" font-weight="bold" fill="white">A</text>
+        <circle cx="440.0" cy="220" r="12" fill="#E53E3E" 
+            stroke="#C53030" stroke-width="1.5"/>
+                <text x="440.0" y="224" text-anchor="middle" 
+            font-family="Arial" font-size="10" font-weight="bold" fill="white">U</text>
+        <line x1="440.0" y1="132" x2="440.0" y2="208" 
+                stroke="#718096" stroke-width="1" stroke-dasharray="2,2" opacity="0.5"/>
+        <circle cx="870.0" cy="120" r="12" fill="#38A169" 
+            stroke="#276749" stroke-width="1.5"/>
+                <text x="870.0" y="124" text-anchor="middle" 
+            font-family="Arial" font-size="10" font-weight="bold" fill="white">A</text>
+                <circle cx="880.0" cy="110" r="7" 
+                fill="#DD6B20" stroke="#C05621" stroke-width="1">
+                <title>2'-Fluoro (2'-F)</title>
+            </circle>
+                <text x="880.0" y="113" text-anchor="middle" 
+                font-family="Arial" font-size="7" font-weight="bold" fill="white">F</text>
+        <circle cx="870.0" cy="220" r="12" fill="#E53E3E" 
+            stroke="#C53030" stroke-width="1.5"/>
+                <text x="870.0" y="224" text-anchor="middle" 
+            font-family="Arial" font-size="10" font-weight="bold" fill="white">U</text>
+        <line x1="870.0" y1="132" x2="870.0" y2="208" 
+                stroke="#718096" stroke-width="1" stroke-dasharray="2,2" opacity="0.5"/>
+        <rect x="470" y="220" width="410" height="30" 
+            fill="#2B6CB0" stroke="#4299E1" rx="3"/>
+        <text x="675" y="240" text-anchor="middle" 
+            font-family="Arial" font-size="10" fill="white">5 modifications: 2'-Fluoro (2'-F)</text>
+            
+            <rect x="620" y="410" 
+            width="260" height="130" fill="#1A202C" stroke="#4A5568" rx="5" opacity="0.9"/>
+        <text x="630" y="430" 
+            font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#E2E8F0">
+            Modification Legend
+        </text>
+        <circle cx="640" cy="455" r="8" 
+                fill="#4A5568" stroke="#2D3748" stroke-width="1"/>
+        <text x="655" y="459" 
+                font-family="Arial, sans-serif" font-size="10" fill="#CBD5E0">
+                Native
+            </text>
+        <circle cx="640" cy="477" r="8" 
+                fill="#3182CE" stroke="#2B6CB0" stroke-width="1"/>
+        <text x="655" y="481" 
+                font-family="Arial, sans-serif" font-size="10" fill="#CBD5E0">
+                2'-O-Methyl (2'-OMe)
+            </text>
+        <circle cx="640" cy="499" r="8" 
+                fill="#DD6B20" stroke="#C05621" stroke-width="1"/>
+        <text x="655" y="503" 
+                font-family="Arial, sans-serif" font-size="10" fill="#CBD5E0">
+                2'-Fluoro (2'-F)
+            </text>
+        <circle cx="640" cy="521" r="8" 
+                fill="#805AD5" stroke="#6B46C1" stroke-width="1"/>
+        <text x="655" y="525" 
+                font-family="Arial, sans-serif" font-size="10" fill="#CBD5E0">
+                Phosphorothioate (PS)
+            </text>
+        </svg>

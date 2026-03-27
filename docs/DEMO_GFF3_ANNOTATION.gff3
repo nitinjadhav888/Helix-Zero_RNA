@@ -1,0 +1,159 @@
+## Spodoptera frugiperda (Fall Armyworm) - Demo GFF3 Annotation File
+
+### Download Real GFF3 Files from NCBI:
+
+**Option 1: Fall Armyworm (Spodoptera frugiperda)**
+- **NCBI Genome:** https://www.ncbi.nlm.nih.gov/genome/12974
+- **Direct GFF3 Download:** https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/021/871/675/GCF_021871675.1_ASM2187167v1/GCF_021871675.1_ASM2187167v1_genomic.gff.gz
+- **Size:** ~50 MB (compressed)
+- **Genes:** ~18,000 protein-coding genes
+
+**Option 2: Alternative Assembly (iPREB_ACEmbly)**
+- **NCBI Accession:** GCA_904972905.1
+- **Download:** https://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/904/972/905/GCA_904972905.1/GCA_904972905.1_iPREB_ACEmbly_v1.0/GCA_904972905.1_iPREB_ACEmbly_v1.0_genomic.gff.gz
+
+---
+
+### Quick Demo GFF3 (Small Sample for Testing):
+
+Copy the content below and save as `demo_genome.gff3`:
+
+```gff3
+##gff-version 3
+##sequence-region scaffold_1 1 10000
+scaffold_1	RefSeq	gene	1000	2500	.	+	.	ID=gene001;Name=Actin;gbkey=Gene;gene=actin;gene_biotype=protein_coding
+scaffold_1	RefSeq	mRNA	1000	2500	.	+	.	ID=mRNA001;Parent=gene001;Name=Actin.1;gbkey=mRNA
+scaffold_1	RefSeq	exon	1000	1200	.	+	.	ID=exon001;Parent=mRNA001
+scaffold_1	RefSeq	exon	1500	1700	.	+	.	ID=exon002;Parent=mRNA001
+scaffold_1	RefSeq	exon	2200	2500	.	+	.	ID=exon003;Parent=mRNA001
+scaffold_1	RefSeq	CDS	1050	1200	.	+	0	ID=cds001;Parent=mRNA001;Name=Actin.1;gbkey=CDS
+scaffold_1	RefSeq	CDS	1500	1700	.	+	2	ID=cds002;Parent=mRNA001
+scaffold_1	RefSeq	CDS	2200	2450	.	+	0	ID=cds003;Parent=mRNA001
+scaffold_1	RefSeq	gene	3000	4200	.	-	.	ID=gene002;Name=Tubulin;gbkey=Gene;gene=tubulin;gene_biotype=protein_coding
+scaffold_1	RefSeq	mRNA	3000	4200	.	-	.	ID=mRNA002;Parent=gene002;Name=Tubulin.1;gbkey=mRNA
+scaffold_1	RefSeq	exon	3000	3300	.	-	.	ID=exon004;Parent=mRNA002
+scaffold_1	RefSeq	exon	3600	3900	.	-	.	ID=exon005;Parent=mRNA002
+scaffold_1	RefSeq	exon	4000	4200	.	-	.	ID=exon006;Parent=mRNA002
+scaffold_1	RefSeq	CDS	3050	3300	.	-	0	ID=cds004;Parent=mRNA002;Name=Tubulin.1;gbkey=CDS
+scaffold_1	RefSeq	CDS	3600	3900	.	-	0	ID=cds005;Parent=mRNA002
+scaffold_1	RefSeq	CDS	4000	4150	.	-	0	ID=cds006;Parent=mRNA002
+scaffold_1	RefSeq	gene	5000	6500	.	+	.	ID=gene003;Name=Caspase;gbkey=Gene;gene=caspase;gene_biotype=protein_coding
+scaffold_1	RefSeq	mRNA	5000	6500	.	+	.	ID=mRNA003;Parent=gene003;Name=Caspase.1;gbkey=mRNA
+scaffold_1	RefSeq	exon	5000	5300	.	+	.	ID=exon007;Parent=mRNA003
+scaffold_1	RefSeq	exon	5600	5900	.	+	.	ID=exon008;Parent=mRNA003
+scaffold_1	RefSeq	exon	6200	6500	.	+	.	ID=exon009;Parent=mRNA003
+scaffold_1	RefSeq	CDS	5100	5300	.	+	0	ID=cds007;Parent=mRNA003;Name=Caspase.1;gbkey=CDS
+scaffold_1	RefSeq	CDS	5600	5900	.	+	0	ID=cds008;Parent=mRNA003
+scaffold_1	RefSeq	CDS	6200	6450	.	+	0	ID=cds009;Parent=mRNA003
+scaffold_1	RefSeq	gene	7000	8200	.	-	.	ID=gene004;Name=Elongation_Factor_1_alpha;gbkey=Gene;gene=ef1a;gene_biotype=protein_coding
+scaffold_1	RefSeq	mRNA	7000	8200	.	-	.	ID=mRNA004;Parent=gene004;Name=EF1A.1;gbkey=mRNA
+scaffold_1	RefSeq	exon	7000	7400	.	-	.	ID=exon010;Parent=mRNA004
+scaffold_1	RefSeq	exon	7600	7900	.	-	.	ID=exon011;Parent=mRNA004
+scaffold_1	RefSeq	exon	8000	8200	.	-	.	ID=exon012;Parent=mRNA004
+scaffold_1	RefSeq	CDS	7100	7400	.	-	0	ID=cds010;Parent=mRNA004;Name=EF1A.1;gbkey=CDS
+scaffold_1	RefSeq	CDS	7600	7900	.	-	0	ID=cds011;Parent=mRNA004
+scaffold_1	RefSeq	CDS	8000	8150	.	-	0	ID=cds012;Parent=mRNA004
+scaffold_1	RefSeq	gene	9000	10000	.	+	.	ID=gene005;Name=Ribosomal_Protein_S18;gbkey=Gene;gene=rps18;gene_biotype=protein_coding
+scaffold_1	RefSeq	mRNA	9000	10000	.	+	.	ID=mRNA005;Parent=gene005;Name=RPS18.1;gbkey=mRNA
+scaffold_1	RefSeq	exon	9000	9300	.	+	.	ID=exon013;Parent=mRNA005
+scaffold_1	RefSeq	exon	9500	9800	.	+	.	ID=exon014;Parent=mRNA005
+scaffold_1	RefSeq	exon	9900	10000	.	+	.	ID=exon015;Parent=mRNA005
+scaffold_1	RefSeq	CDS	9050	9300	.	+	0	ID=cds013;Parent=mRNA005;Name=RPS18.1;gbkey=CDS
+scaffold_1	RefSeq	CDS	9500	9800	.	+	0	ID=cds014;Parent=mRNA005
+scaffold_1	RefSeq	CDS	9900	10000	.	+	0	ID=cds015;Parent=mRNA005
+```
+
+---
+
+### How to Use:
+
+**Method 1: Create Demo File Manually**
+1. Copy the GFF3 content above (between the ```gff3 markers)
+2. Paste into a text editor (Notepad, VS Code, etc.)
+3. Save as `demo_genome.gff3`
+4. Upload in v7.0 pipeline along with matching FASTA
+
+**Method 2: Download Real Genome**
+1. Go to: https://www.ncbi.nlm.nih.gov/genome/12974
+2. Click "Download Genome" → "GFF3 annotation"
+3. Unzip the downloaded file
+4. Upload to v7.0 pipeline
+
+---
+
+### Matching FASTA File:
+
+You'll need a matching FASTA file. Create one with this structure:
+
+```fasta
+>scaffold_1 Fall Armyworm chromosome 1
+ATGCGTGAGTGCATCTCCATCCACGTTGGCCAGGCTGGTGTCCAGATCGGCAATGCCTGA
+CGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTA
+[... continue sequence for ~10,000 bp ...]
+```
+
+**Or download matching FASTA:**
+- https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/021/871/675/GCF_021871675.1_ASM2187167v1/GCF_021871675.1_ASM2187167v1_genomic.fna.gz
+
+---
+
+### Quick Test Files (Both Required):
+
+**Minimum Working Example:**
+
+1. **FASTA:** `genome.fasta` (~10 KB for demo)
+   ```
+   >scaffold_1
+   [10,000 base pairs of DNA sequence]
+   ```
+
+2. **GFF3:** `genome.gff3` (copy the demo above)
+
+Upload both files together in the v7.0 pipeline!
+
+---
+
+### Other Insect Genomes (Optional):
+
+**Drosophila melanogaster (Fruit Fly):**
+- Download: https://flybase.org/downloads
+- Well-annotated, ~14,000 genes
+
+**Anopheles gambiae (Mosquito):**
+- NCBI: https://www.ncbi.nlm.nih.gov/genome/186
+- ~13,000 genes
+
+**Apis mellifera (Honey Bee):**
+- NCBI: https://www.ncbi.nlm.nih.gov/genome/12063
+- ~10,000 genes
+
+---
+
+### File Requirements:
+
+✅ **GFF3 Format:** Must be version 3 (check first line says `##gff-version 3`)  
+✅ **Matching Sequences:** Scaffold/chromosome names must match between FASTA and GFF3  
+✅ **Gene Features:** Must include gene, mRNA, exon, and CDS features  
+✅ **Proper Attributes:** ID and Parent attributes required  
+
+❌ **Don't Use:** GTF format (different from GFF3)  
+❌ **Mismatched Names:** Scaffold names differ between files  
+❌ **Incomplete Annotations:** Missing CDS or exon data  
+
+---
+
+### Expected Results After Upload:
+
+With the demo GFF3 above, you should see:
+- **5 Genes:** Actin, Tubulin, Caspase, EF1A, RPS18
+- **All Essential:** High essentiality scores (>75)
+- **Ready for Selection:** All genes selectable for siRNA design
+
+With real Fall Armyworm genome:
+- **~18,000 Genes:** Full proteome
+- **Varied Essentiality:** Filter by score ≥75 for best targets
+- **Complete Analysis:** Full multi-omics integration
+
+---
+
+**Need Help?** If you have issues loading the files, try the small demo GFF3 first (5 genes), then scale up to the full genome!

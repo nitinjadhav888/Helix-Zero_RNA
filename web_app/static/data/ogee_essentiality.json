@@ -1,0 +1,42 @@
+{
+  "actin": {
+    "score": 0.95,
+    "context": "Highly conserved cytoskeletal protein"
+  },
+  "tubulin": {
+    "score": 0.92,
+    "context": "Essential for cell division"
+  },
+  "caspase": {
+    "score": 0.88,
+    "context": "Critical for apoptosis"
+  },
+  "ef1a": {
+    "score": 0.94,
+    "context": "Translation elongation factor"
+  },
+  "rps18": {
+    "score": 0.96,
+    "context": "Ribosomal protein S18"
+  },
+  "gapdh": {
+    "score": 0.89,
+    "context": "Glycolysis enzyme"
+  },
+  "hsp90": {
+    "score": 0.87,
+    "context": "Heat shock protein chaperone"
+  },
+  "cox1": {
+    "score": 0.93,
+    "context": "Cytochrome c oxidase subunit 1"
+  },
+  "nadh": {
+    "score": 0.91,
+    "context": "NADH dehydrogenase subunit"
+  },
+  "atpb": {
+    "score": 0.90,
+    "context": "ATP synthase subunit beta"
+  }
+}

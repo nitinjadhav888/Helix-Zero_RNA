@@ -1,0 +1,62 @@
+[
+  {
+    "geneId": "actin",
+    "essentiality": "essential",
+    "organism": "Drosophila melanogaster",
+    "evidence": "RNAi screening"
+  },
+  {
+    "geneId": "tubulin",
+    "essentiality": "essential",
+    "organism": "Drosophila melanogaster",
+    "evidence": "Mutagenesis"
+  },
+  {
+    "geneId": "caspase",
+    "essentiality": "essential",
+    "organism": "Homo sapiens",
+    "evidence": "Knockout studies"
+  },
+  {
+    "geneId": "ef1a",
+    "essentiality": "essential",
+    "organism": "Saccharomyces cerevisiae",
+    "evidence": "Deletion library"
+  },
+  {
+    "geneId": "rps18",
+    "essentiality": "essential",
+    "organism": "Escherichia coli",
+    "evidence": "Transposon mutagenesis"
+  },
+  {
+    "geneId": "gapdh",
+    "essentiality": "essential",
+    "organism": "Mus musculus",
+    "evidence": "CRISPR screening"
+  },
+  {
+    "geneId": "hsp90",
+    "essentiality": "essential",
+    "organism": "Caenorhabditis elegans",
+    "evidence": "RNAi screening"
+  },
+  {
+    "geneId": "cox1",
+    "essentiality": "essential",
+    "organism": "Apis mellifera",
+    "evidence": "Comparative genomics"
+  },
+  {
+    "geneId": "nadh",
+    "essentiality": "essential",
+    "organism": "Arabidopsis thaliana",
+    "evidence": "Insertional mutagenesis"
+  },
+  {
+    "geneId": "atpb",
+    "essentiality": "essential",
+    "organism": "Zea mays",
+    "evidence": "Mutant analysis"
+  }
+]

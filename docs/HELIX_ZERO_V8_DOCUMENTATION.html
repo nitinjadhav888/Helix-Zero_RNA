@@ -1,0 +1,2151 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Helix-Zero V8 Documentation</title>
+<style>
+body { font-family: Arial, sans-serif; max-width: 900px; margin: 0 auto; padding: 20px; line-height: 1.6; }
+h1 { color: #1a5f7a; border-bottom: 2px solid #1a5f7a; }
+h2 { color: #2e8b57; }
+h3 { color: #4a4a4a; }
+code { background: #f5f5f5; padding: 2px 6px; color: #c7254e; font-family: monospace; }
+pre { background: #f8f8f8; padding: 15px; border-radius: 5px; overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; }
+th, td { border: 1px solid #ddd; padding: 8px; }
+th { background: #1a5f7a; color: white; }
+tr:nth-child(even) { background: #f9f9f9; }
+</style>
+</head>
+<body>
+<h1>Helix-Zero V8 :: Complete Technical Documentation</h1>
+<h2>Regulatory-Grade RNA Interference Design Engine</h2>
+<p><strong>Version:</strong> 8.0<br />
+<strong>Date:</strong> March 2026<br />
+<strong>Status:</strong> Production Ready  </p>
+<hr />
+<h1>Table of Contents</h1>
+<ol>
+<li><a href="#1-executive-summary">Executive Summary</a></li>
+<li><a href="#2-architecture-overview">Architecture Overview</a></li>
+<li><a href="#3-scientific-theory">Scientific Theory</a></li>
+<li><a href="#4-v6-model-9-layer-bio-safety-firewall">V6 Model: 9-Layer Bio-Safety Firewall</a></li>
+<li><a href="#5-v7-model-deep-learning-foundation">V7 Model: Deep Learning Foundation</a></li>
+<li><a href="#6-v8-advanced-features">V8 Advanced Features</a>
+<ol>
+<li><a href="#61-resistance-evolution-model-cocktail-design">6.1 Cocktail Design</a></li>
+<li><a href="#62-ai-chemical-modification-optimizer">6.2 AI Chemical Optimization</a></li>
+<li><a href="#63-rna-target-accessibility">6.3 RNA Accessibility</a></li>
+<li><a href="#64-rna-secondary-structure-prediction-new">6.4 RNA Structure Prediction</a></li>
+<li><a href="#65-tissue-specific-off-target-filtering">6.5 Tissue Filtering</a></li>
+<li><a href="#66-pdb-structure-visualization-new">6.6 PDB Visualization</a></li>
+</ol>
+</li>
+<li><a href="#7-api-reference">API Reference</a></li>
+<li><a href="#8-data-flow-diagrams">Data Flow Diagrams</a></li>
+<li><a href="#9-implementation-details">Implementation Details</a></li>
+<li><a href="#10-testing-guide">Testing Guide</a></li>
+</ol>
+<hr />
+<h1>1. Executive Summary</h1>
+<h2>What is Helix-Zero?</h2>
+<p>Helix-Zero is a <strong>computational platform for designing RNA interference (RNAi) triggers</strong> - molecules that can silence specific genes in pests without harming beneficial organisms like honeybees.</p>
+<h2>Key Problem It Solves</h2>
+<p>When designing pesticides that use RNAi:
+1. <strong>Efficacy</strong>: The siRNA must effectively silence the target pest gene
+2. <strong>Safety</strong>: The siRNA must NOT silence any genes in non-target organisms (pollinators)
+3. <strong>Optimization</strong>: The siRNA must be chemically stable for practical use</p>
+<h2>Solution</h2>
+<p>Helix-Zero uses a <strong>multi-layered approach</strong> combining:
+- Thermodynamic calculations (SantaLucia 1998 nearest-neighbour model)
+- Machine learning (RiNALMo-v2 Transformer)
+- Bioinformatic filtering (Bloom filters, homology search)
+- Chemical simulation (2'-OMe, 2'-F, PS modifications)</p>
+<hr />
+<h1>2. Architecture Overview</h1>
+<h2>System Components</h2>
+<pre><code>┌─────────────────────────────────────────────────────────────────┐
+│                     HELIX-ZERO V8 ARCHITECTURE                    │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  ┌──────────────┐    ┌──────────────┐    ┌──────────────┐     │
+│  │   FLASK      │    │   FASTAPI    │    │   FRONTEND   │     │
+│  │   (V6)      │◄──►│   (V7)       │◄──►│   (UI)       │     │
+│  │   Port 5000  │    │   Port 8000  │    │   Browser    │     │
+│  └──────────────┘    └──────────────┘    └──────────────┘     │
+│        │                   │                                    │
+│        ▼                   ▼                                    │
+│  ┌──────────────┐    ┌──────────────┐                        │
+│  │ 9-Layer      │    │ RiNALMo-v2    │                        │
+│  │ Safety       │    │ Transformer    │                        │
+│  │ Firewall     │    │ Neural Net     │                        │
+│  └──────────────┘    └──────────────┘                        │
+│                                                                  │
+│  ┌─────────────────────────────────────────────────────────┐   │
+│  │                    SUPPORTING MODULES                      │   │
+│  ├─────────────┬─────────────┬─────────────┬──────────────┤   │
+│  │ Bloom Filter│ Essentiality│ Chem        │ RNA          │   │
+│  │ (O(1)      │ Scoring     │ Simulator   │ Accessibility│   │
+│  │  Homology)  │ (DEG/OGEE)  │ (AI)        │ (Thermodyn) │   │
+│  └─────────────┴─────────────┴─────────────┴──────────────┘   │
+│                                                                  │
+│  ┌─────────────────────────────────────────────────────────┐   │
+│  │                    DATA STORAGE                           │   │
+│  ├─────────────┬─────────────┬─────────────────────────────┤   │
+│  │ SQLite DB   │ JSON DBs   │ Session State                │   │
+│  │ (History)   │ (Genes)    │ (JavaScript)                │   │
+│  └─────────────┴─────────────┴─────────────────────────────┘   │
+│                                                                  │
+└─────────────────────────────────────────────────────────────────┘
+</code></pre>
+<h2>Technology Stack</h2>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Technology</th>
+<th>Port</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Web Server</td>
+<td>Flask</td>
+<td>5000</td>
+<td>Main application, V6 pipeline</td>
+</tr>
+<tr>
+<td>ML Backend</td>
+<td>FastAPI + PyTorch</td>
+<td>8000</td>
+<td>RiNALMo-v2 predictions</td>
+</tr>
+<tr>
+<td>Frontend</td>
+<td>HTML + Bootstrap + jQuery</td>
+<td>-</td>
+<td>User interface</td>
+</tr>
+<tr>
+<td>Database</td>
+<td>SQLite</td>
+<td>-</td>
+<td>Sequence history storage</td>
+</tr>
+<tr>
+<td>Genome Index</td>
+<td>Bloom Filter</td>
+<td>-</td>
+<td>O(1) homology search</td>
+</tr>
+</tbody>
+</table>
+<h2>File Structure</h2>
+<pre><code>Helix-Zero6.0/
+├── web_app/
+│   ├── app.py              # Flask main application (5000)
+│   ├── engine.py           # V6 9-layer safety engine
+│   ├── essentiality.py     # Gene essentiality scoring
+│   ├── bloom_filter.py     # O(1) genome indexing
+│   ├── chem_simulator.py   # Chemical modification AI
+│   ├── rna_accessibility.py # Thermodynamic accessibility analysis
+│   ├── rna_structure.py    # 2D Structure prediction (Nussinov fallback)
+│   ├── vienna_integration.py # NEW! ViennaRNA (RNAfold) integration
+│   ├── svg_generator.py    # 2D SVG visualization
+│   ├── pdb_generator.py    # PDB 3D structure generation
+│   ├── tissue_transcriptomics.py # Tissue-specific filtering
+│   ├── models.py           # SQLAlchemy database models
+│   ├── rag_agent.py        # RAG explanation agent
+│   ├── templates/
+│   │   └── index.html     # Main UI template
+│   └── static/
+│       ├── script.js       # Frontend JavaScript
+│       ├── style.css       # Styling
+│       └── data/          # JSON databases
+│           ├── essential_genes.json
+│           ├── ogee_essentiality.json
+│           ├── rnai_phenotypes.json
+│           └── tissue_expression.json
+├── backend/
+│   └── main.py             # FastAPI ML server (8000)
+│                            # Contains RiNALMo-v2 model
+└── docs/
+    └── [Documentation files]
+</code></pre>
+<hr />
+<h1>3. Scientific Theory</h1>
+<h2>3.1 RNA Interference (RNAi) Basics</h2>
+<h3>What is RNAi?</h3>
+<p>RNA interference is a natural cellular mechanism where short RNA molecules can "silence" specific genes. In pest control:</p>
+<ol>
+<li>We design a small piece of RNA called <strong>siRNA</strong> (small interfering RNA)</li>
+<li>This siRNA matches a critical gene in the pest</li>
+<li>When the pest consumes the siRNA, it silences the target gene</li>
+<li>The pest dies or becomes unable to function</li>
+</ol>
+<h3>The siRNA Structure</h3>
+<pre><code>siRNA Duplex (21 base pairs):
+
+    5' ─────────────────────────────── 3'
+         │                          │
+         │   GUIDE STRAND           │
+         │   (the one that guides) │
+         │                          │
+    3' ─────────────────────────────── 5'
+         │                          │
+         │   PASSENGER STRAND       │
+         │   (discarded by RISC)    │
+         └──────────────────────────┘
+
+Position: 1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 16 17 18 19 20 21
+          │  │  │  │  │  │  │  │  │  │   │  │  │  │  │  │  │  │  │  │  │
+          ▼  ▼  ▼  ▼  ▼  ▼  ▼  ▼  ▼  ▼   ▼  ▼  ▼  ▼  ▼  ▼  ▼  ▼  ▼  ▼  ▼
+         [A][T][G][G][A][C][T][A][C][A ][A ][G ][G ][A ][C ][G ][A ][C ][G ][A]
+                                  ↑
+                              SEED REGION
+                             (positions 2-8)
+                             Critical for target recognition
+</code></pre>
+<h2>3.2 Thermodynamics: SantaLucia 1998 Nearest-Neighbour Model</h2>
+<h3>The Problem</h3>
+<p>DNA/RNA strands are held together by hydrogen bonds. The energy required to separate them is called <strong>Free Energy (ΔG)</strong>.</p>
+<h3>The Solution</h3>
+<p>The SantaLucia 1998 model states: <strong>"The stability of a base pair depends not just on itself, but also on its neighbour."</strong></p>
+<h3>Base Pair Energies</h3>
+<p>Each dinucleotide pair has specific thermodynamic values:</p>
+<table>
+<thead>
+<tr>
+<th>Dinucleotide</th>
+<th>ΔH (kcal/mol)</th>
+<th>ΔS (cal/mol·K)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AA/TT</td>
+<td>-7.9</td>
+<td>-22.2</td>
+</tr>
+<tr>
+<td>AT</td>
+<td>-7.2</td>
+<td>-20.4</td>
+</tr>
+<tr>
+<td>TA</td>
+<td>-7.2</td>
+<td>-21.3</td>
+</tr>
+<tr>
+<td>GC</td>
+<td>-9.8</td>
+<td>-24.4</td>
+</tr>
+<tr>
+<td>CG</td>
+<td>-10.6</td>
+<td>-27.2</td>
+</tr>
+</tbody>
+</table>
+<h3>Free Energy Calculation Formula</h3>
+<pre><code>ΔG = ΔH - T × ΔS
+
+Where:
+- T = 310.15 K (37°C / body temperature)
+- ΔH = Sum of all enthalpy values
+- ΔS = Sum of all entropy values
+</code></pre>
+<h3>Example Calculation</h3>
+<p>For sequence "ATGC":</p>
+<pre><code>Step 1: Split into dinucleotides
+- AT, TG, GC
+
+Step 2: Look up values
+- AT: ΔH = -7.2, ΔS = -20.4
+- TG: ΔH = -8.5, ΔS = -22.7
+- GC: ΔH = -9.8, ΔS = -24.4
+
+Step 3: Sum values
+- Total ΔH = -7.2 + (-8.5) + (-9.8) = -25.5
+- Total ΔS = -20.4 + (-22.7) + (-24.4) = -67.5
+
+Step 4: Calculate ΔG at 37°C
+- ΔG = -25.5 - 310.15 × (-67.5 / 1000)
+- ΔG = -25.5 + 20.9
+- ΔG = -4.6 kcal/mol
+</code></pre>
+<h3>Why This Matters</h3>
+<table>
+<thead>
+<tr>
+<th>ΔG Value</th>
+<th>Interpretation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Very negative (&lt; -30)</td>
+<td>Very stable duplex</td>
+</tr>
+<tr>
+<td>Moderate (-20 to -30)</td>
+<td>Optimal for siRNA</td>
+</tr>
+<tr>
+<td>Positive (&gt; 0)</td>
+<td>Unstable, won't form duplex</td>
+</tr>
+</tbody>
+</table>
+<h2>3.3 The 15-Nucleotide Safety Rule</h2>
+<h3>The Critical Discovery</h3>
+<p>For effective RNAi-mediated gene silencing, a minimum of <strong>15 contiguous nucleotides</strong> of perfect complementarity is required between the siRNA and the target.</p>
+<h3>The Safety Implication</h3>
+<pre><code>If our siRNA has 15+ contiguous matches with a pollinator's genome:
+→ It will silence that pollinator gene
+→ This is LETHAL TO THE POLLINATOR
+→ This candidate must be REJECTED
+</code></pre>
+<h3>How Helix-Zero Implements This</h3>
+<pre><code>┌─────────────────────────────────────────────────────────────┐
+│                    15-NT RULE CHECK                         │
+├─────────────────────────────────────────────────────────────┤
+│                                                              │
+│  siRNA:    ATGGACTACAAGGACGACGA                              │
+│              |||||||||||||||||  ← 15 contiguous matches     │
+│  Bee Gene: ATGGACTACAAGGACGACGA                              │
+│                                                              │
+│  Result: REJECT ❌                                          │
+│  Safety Penalty: -100 points                                 │
+│                                                              │
+├─────────────────────────────────────────────────────────────┤
+│                                                              │
+│  siRNA:    ATGGACTACAAGGACGACGA                              │
+│              |||||||||||    |||  ← Only 10 + 3 matches      │
+│  Bee Gene: ATGGACTACAAGGAAAGCGCA                              │
+│                                                              │
+│  Result: PASS ✅ (not contiguous)                           │
+│                                                              │
+└─────────────────────────────────────────────────────────────┘
+</code></pre>
+<h2>3.4 RISC Loading and Strand Selection</h2>
+<h3>What is RISC?</h3>
+<p>RISC (RNA-Induced Silencing Complex) is the cellular machinery that carries the siRNA and finds the target.</p>
+<h3>The Strand Selection Problem</h3>
+<p>The siRNA duplex has two strands. RISC must select the <strong>correct one</strong> (guide strand) and discard the other (passenger strand).</p>
+<h3>The Thermodynamic Solution</h3>
+<p>RISC naturally selects the strand whose <strong>5' end is thermodynamically WEAKER</strong>. This ensures proper guide strand selection.</p>
+<pre><code>┌─────────────────────────────────────────────────────────────┐
+│                 STRAND ASYMMETRY                             │
+├─────────────────────────────────────────────────────────────┤
+│                                                              │
+│  GOOD (Positive Asymmetry):                                  │
+│  5' end:  A-T-A-T  (weak, GC=0%)  ← RISC prefers THIS    │
+│  3' end:  G-C-G-C  (strong, GC=100%)                       │
+│  Asymmetry = +ΔG (GOOD)                                     │
+│                                                              │
+├─────────────────────────────────────────────────────────────┤
+│                                                              │
+│  BAD (Negative Asymmetry):                                    │
+│  5' end:  G-C-G-C  (strong, GC=100%)                       │
+│  3' end:  A-T-A-T  (weak, GC=0%)  ← RISC prefers THIS     │
+│  Asymmetry = -ΔG (BAD - wrong strand loaded)                │
+│                                                              │
+└─────────────────────────────────────────────────────────────┘
+</code></pre>
+<h3>Asymmetry Formula</h3>
+<pre><code>Asymmetry = Energy(3' end) - Energy(5' end)
+
+Where:
+- Positive = Good (5' end is weaker)
+- Negative = Bad (5' end is stronger)
+</code></pre>
+<hr />
+<h1>4. V6 Model: 9-Layer Bio-Safety Firewall</h1>
+<p>The V6 model is the <strong>core safety engine</strong> that evaluates each siRNA candidate against 9 different safety criteria.</p>
+<h2>Architecture</h2>
+<pre><code>┌─────────────────────────────────────────────────────────────────┐
+│                 9-LAYER BIO-SAFETY FIREWALL                      │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  ┌────────────┐                                                │
+│  │ Layer 1     │ GC Content Check (30-52% optimal)             │
+│  │ Layer 2     │ Minimum Free Energy (MFE)                      │
+│  │ Layer 3     │ Strand Asymmetry                               │
+│  │ Layer 4     │ 15-mer Homology Exclusion                      │
+│  │ Layer 5     │ Full 21-nt Identity Screen                    │
+│  │ Layer 6     │ Seed Region Matching (positions 2-8)          │
+│  │ Layer 7     │ Palindrome Detection                          │
+│  │ Layer 8     │ CpG Immunogenicity                           │
+│  │ Layer 9     │ Poly-runs &amp; Entropy                           │
+│  └────────────┘                                                │
+│           │                                                     │
+│           ▼                                                     │
+│  ┌─────────────────┐                                             │
+│  │  SAFETY SCORE   │ → 0-100 (100 = perfect safety)            │
+│  └─────────────────┘                                             │
+│           │                                                     │
+│           ▼                                                     │
+│  ┌─────────────────┐                                             │
+│  │  EFFICACY SCORE │ → 0-100 (based on Reynolds rules)         │
+│  └─────────────────┘                                             │
+│                                                                  │
+└─────────────────────────────────────────────────────────────────┘
+</code></pre>
+<h2>Layer-by-Layer Analysis</h2>
+<h3>Layer 1: GC Content (Thermodynamic Stability)</h3>
+<p><strong>Theory:</strong> G-C pairs have 3 hydrogen bonds (strong), A-T pairs have 2 (weak).
+- Too many G-C (&gt;52%): Strand too rigid to unwind
+- Too few G-C (&lt;30%): Strand too fragile to survive</p>
+<p><strong>Implementation:</strong></p>
+<pre><code class="language-python">def calculate_gc_content(seq: str) -&gt; float:
+    if not seq: return 0.0
+    gc = sum(1 for c in seq if c in 'GC')
+    return (gc / len(seq)) * 100
+</code></pre>
+<p><strong>Safety Penalty:</strong>
+| GC Content | Penalty |
+|------------|---------|
+| 30-52% | 0 (No penalty) |
+| 36-52% (optimal) | +8.0 efficacy bonus |
+| 25-30% or 52-60% | -5.0 penalty |
+| &lt;25% or &gt;60% | -12.0 penalty |</p>
+<hr />
+<h3>Layer 2: Minimum Free Energy (MFE)</h3>
+<p><strong>Theory:</strong> MFE tells how thermodynamically stable the siRNA duplex is. More negative = more stable.</p>
+<p><strong>Implementation:</strong></p>
+<pre><code class="language-python">def calculate_mfe(seq: str) -&gt; float:
+    seq = seq.upper().replace('U', 'T')
+    total_dh, total_ds = 0.0, 0.0
+
+    for i in range(len(seq) - 1):
+        dinuc = seq[i:i+2]
+        if dinuc in NN_PARAMS:
+            dh, ds = NN_PARAMS[dinuc]
+            total_dh += dh
+            total_ds += ds
+
+    # ΔG = ΔH - T·ΔS at 37°C
+    mfe = total_dh - 310.15 * (total_ds / 1000.0)
+    return round(mfe, 2)
+</code></pre>
+<p><strong>Output:</strong> MFE value in kcal/mol (typically -20 to -35 for good siRNA)</p>
+<hr />
+<h3>Layer 3: Strand Asymmetry (Duplex-End Stability)</h3>
+<p><strong>Theory:</strong> For proper RISC loading, the 5' end should be thermodynamically weaker than the 3' end.</p>
+<p><strong>Implementation:</strong></p>
+<pre><code class="language-python">def calculate_asymmetry(seq: str) -&gt; float:
+    seq = seq.upper().replace('U', 'T')
+
+    def end_energy(s):
+        e = 0.0
+        for i in range(len(s) - 1):
+            d = s[i:i+2]
+            if d in NN_PARAMS:
+                dh, ds = NN_PARAMS[d]
+                e += dh - 310.15 * (ds / 1000.0)
+        return e
+
+    # Positive = 5' end weaker = GOOD
+    return round(end_energy(seq[-4:]) - end_energy(seq[:4]), 2)
+</code></pre>
+<p><strong>Output:</strong>
+- Positive value: Favorable (guide strand selection works)
+- Negative value: Unfavorable (wrong strand may be loaded)</p>
+<hr />
+<h3>Layer 4: 15-mer Homology Exclusion (Off-Target Safety)</h3>
+<p><strong>Theory:</strong> If ≥15 contiguous nucleotides match a non-target genome, it's lethal toxicity.</p>
+<p><strong>Implementation:</strong></p>
+<pre><code class="language-python">def find_max_homology(seq: str, non_target: str, bloom_index=None) -&gt; int:
+    # Strategy 1: Bloom Filter (O(1) fast)
+    if bloom_index and bloom_index.is_built:
+        result = bloom_index.check_homology(seq)
+        return result[&quot;maxMatchLength&quot;]
+
+    # Strategy 2: Exact substring search (O(n²))
+    if not non_target:
+        return 0
+    for l in range(len(seq), 3, -1):
+        for i in range(len(seq) - l + 1):
+            if seq[i:i+l] in non_target:
+                return l
+    return 0
+</code></pre>
+<p><strong>Safety Penalty:</strong></p>
+<pre><code class="language-python">if match_len &gt;= 15:
+    safety_score -= (match_len - 14) * 15.0
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Match Length</th>
+<th>Safety Penalty</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>15 bp</td>
+<td>-15 points</td>
+</tr>
+<tr>
+<td>16 bp</td>
+<td>-30 points</td>
+</tr>
+<tr>
+<td>17 bp</td>
+<td>-45 points</td>
+</tr>
+<tr>
+<td>21 bp (full)</td>
+<td>-100 points</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3>Layer 5: Full 21-nt Identity Screen</h3>
+<p><strong>Theory:</strong> Even stricter - checks if the <em>entire</em> 21-letter sequence appears verbatim in the non-target genome.</p>
+<p><strong>Implementation:</strong></p>
+<pre><code class="language-python">def check_full_21nt_identity(seq: str, non_target: str) -&gt; bool:
+    if not non_target or len(seq) &lt; 21:
+        return False
+    return seq[:21] in non_target
+</code></pre>
+<p><strong>Safety Penalty:</strong> -100 points (immediate rejection)</p>
+<hr />
+<h3>Layer 6: Seed Region Matching (Positions 2-8)</h3>
+<p><strong>Theory:</strong> The "Seed Region" (letters 2 through 8) is the targeting radar. If this matches non-target genes, catastrophic off-target silencing occurs.</p>
+<p><strong>Implementation:</strong></p>
+<pre><code class="language-python">seed_seq = seq[1:8]  # Positions 2-8 (0-indexed)
+if non_target_sequence:
+    seed_match_count = non_target_sequence.count(seed_seq)
+    has_seed_match = seed_match_count &gt; 0
+</code></pre>
+<p><strong>Safety Penalty:</strong></p>
+<pre><code class="language-python">if has_seed_match: safety_score -= min(seed_match_count * 5.0, 30.0)
+</code></pre>
+<hr />
+<h3>Layer 7: Palindrome Detection (Hairpin Risk)</h3>
+<p><strong>Theory:</strong> A palindromic sequence reads identically in reverse-complement. This causes the RNA to fold onto itself, destroying its function.</p>
+<p><strong>Implementation:</strong></p>
+<pre><code class="language-python">def check_palindrome(seq: str) -&gt; (bool, int):
+    complement = {'A': 'T', 'T': 'A', 'C': 'G', 'G': 'C'}
+    for length in range(8, 5, -1):
+        for i in range(len(seq) - length + 1):
+            sub = seq[i:i+length]
+            rev_comp = &quot;&quot;.join(complement.get(c, c) for c in reversed(sub))
+            if sub == rev_comp:
+                return True, length
+    return False, 0
+</code></pre>
+<p><strong>Safety Penalty:</strong></p>
+<pre><code class="language-python">if is_palin: safety_score -= (palin_len * 4.0)
+</code></pre>
+<hr />
+<h3>Layer 8: CpG Immunogenicity</h3>
+<p><strong>Theory:</strong> "CG" dinucleotides trigger Toll-Like Receptor 9 (TLR9) in humans, causing autoimmune inflammatory response.</p>
+<p><strong>Implementation:</strong></p>
+<pre><code class="language-python">def has_cpg_motif(seq: str) -&gt; bool:
+    return &quot;CG&quot; in seq
+
+IMMUNE_MOTIFS = [&quot;CG&quot;, &quot;TGTGT&quot;, &quot;GTCCTTCAA&quot;, &quot;GACTATGTGGAT&quot;]
+</code></pre>
+<p><strong>Safety Penalty:</strong></p>
+<pre><code class="language-python">if cpg: safety_score -= 20.0
+if len(immune_hits) &gt; 0: safety_score -= (len(immune_hits) * 15.0)
+</code></pre>
+<hr />
+<h3>Layer 9: Poly-runs, AT-Repeats &amp; Entropy</h3>
+<p><strong>Theory:</strong>
+- <strong>Poly-runs</strong> (AAAA): Cause polymerase slippage during manufacturing
+- <strong>AT-repeats</strong> (ATATAT): Cause transcription termination errors
+- <strong>Low Shannon Entropy</strong>: Sequence is repetitive and unreliable</p>
+<p><strong>Implementation:</strong></p>
+<pre><code class="language-python">def has_poly_run(seq: str) -&gt; bool:
+    for base in &quot;ATCG&quot;:
+        if base * 4 in seq: return True
+    return False
+
+def has_at_dinuc_repeat(seq: str) -&gt; bool:
+    return &quot;ATATAT&quot; in seq or &quot;TATATA&quot; in seq
+
+def calculate_shannon_entropy(seq: str) -&gt; float:
+    if not seq: return 0.0
+    freq = {}
+    for c in seq:
+        freq[c] = freq.get(c, 0) + 1
+    entropy = 0.0
+    for count in freq.values():
+        p = count / len(seq)
+        if p &gt; 0: entropy -= p * math.log2(p)
+    return round(entropy, 3)
+</code></pre>
+<p><strong>Safety Penalties:</strong>
+| Issue | Penalty |
+|-------|---------|
+| Poly-run | -25 points |
+| AT-repeat | -15 points |
+| Entropy &lt; 1.7 | -(1.7 - entropy) × 40 |</p>
+<hr />
+<h2>Complete Safety Scoring Formula</h2>
+<pre><code class="language-python">safety_score = 100.0
+
+# Layer 1: 15-mer Exclusion
+if match_len &gt;= 15: safety_score -= (match_len - 14) * 15.0
+
+# Layer 2: Full 21-nt Identity
+if full_21nt: safety_score -= 100.0
+
+# Layer 3: Seed Region Match
+if has_seed_match: safety_score -= min(seed_match_count * 5.0, 30.0)
+
+# Layer 4: Palindrome
+if is_palin: safety_score -= (palin_len * 4.0)
+
+# Layer 5: CpG
+if cpg: safety_score -= 20.0
+
+# Layer 6: Poly-run
+if poly: safety_score -= 25.0
+
+# Layer 7: Extended Immune Motifs
+if len(immune_hits) &gt; 0: safety_score -= (len(immune_hits) * 15.0)
+
+# Layer 8: Entropy
+if entropy &lt; 1.7: safety_score -= ((1.7 - entropy) * 40.0)
+
+# Layer 9: AT-repeats
+if at_repeat: safety_score -= 15.0
+
+# Continuous GC Penalty
+gc_deviation = abs(gc - 41.0)
+if gc_deviation &gt; 15: safety_score -= 15.0
+elif gc_deviation &gt; 10: safety_score -= 8.0
+elif gc_deviation &gt; 5: safety_score -= 3.0
+
+safety_score = max(0.0, min(100.0, safety_score))
+</code></pre>
+<hr />
+<h2>Efficacy Scoring (Reynolds Rules)</h2>
+<h3>Theory</h3>
+<p>Based on Reynolds et al. (2004), specific nucleotides at specific positions correlate with silencing efficiency.</p>
+<h3>Position-Specific Preferences</h3>
+<table>
+<thead>
+<tr>
+<th>Position</th>
+<th>Preferred</th>
+<th>Avoid</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1 (5' end)</td>
+<td>A, T</td>
+<td>G, C</td>
+</tr>
+<tr>
+<td>3</td>
+<td>A</td>
+<td>G, C</td>
+</tr>
+<tr>
+<td>10 (Ago2 cleavage)</td>
+<td>A</td>
+<td>G</td>
+</tr>
+<tr>
+<td>19 (3' end)</td>
+<td>A, T</td>
+<td>G, C</td>
+</tr>
+<tr>
+<td>21 (3' terminal)</td>
+<td>G, C</td>
+<td>A, T</td>
+</tr>
+</tbody>
+</table>
+<h3>Implementation</h3>
+<pre><code class="language-python">def calculate_efficacy(seq: str, gc: float) -&gt; float:
+    score = 40.0  # Base score
+
+    # Position-specific bonuses
+    position_prefs = {
+        0: {'A': 3.5, 'T': 3.5, 'G': -2.0, 'C': -2.0},
+        2: {'A': 3.0, 'T': 0.0, 'G': -1.5, 'C': 0.0},
+        9: {'A': 4.0, 'T': 1.0, 'G': -2.0, 'C': -1.0},
+        18: {'A': 3.5, 'T': 3.0, 'G': -2.0, 'C': -2.0},
+        # ... all 20 positions
+    }
+
+    for i in range(min(length, 20)):
+        nt = seq[i]
+        if i in position_prefs:
+            score += position_prefs[i].get(nt, 0)
+
+    # GC content bonus
+    if 36 &lt;= gc &lt;= 52: score += 8.0
+    elif 30 &lt;= gc &lt;= 55: score += 3.0
+
+    # Dinucleotide penalties
+    if seq[-2:] == 'AA': score -= 4.0
+    if 'AAAA' in seq: score -= 5.0
+
+    # Internal stability
+    at_5p = sum(1 for c in seq[:5] if c in 'AT')
+    at_3p = sum(1 for c in seq[-5:] if c in 'AT')
+    score += (at_5p - at_3p) * 2.0
+
+    return max(0.0, min(100.0, round(score, 1)))
+</code></pre>
+<hr />
+<h1>5. V7 Model: Deep Learning Foundation (RiNALMo-v2)</h1>
+<h2>Overview</h2>
+<p>RiNALMo-v2 is a <strong>hybrid neural network</strong> that combines:
+1. <strong>Transformer architecture</strong> (for learning sequence patterns)
+2. <strong>Physics-informed features</strong> (for incorporating thermodynamic rules)</p>
+<h2>Architecture</h2>
+<pre><code>┌─────────────────────────────────────────────────────────────────┐
+│                    RiNALMo-v2 ARCHITECTURE                        │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  Input: 21-nt siRNA sequence                                     │
+│           │                                                     │
+│           ▼                                                     │
+│  ┌─────────────────────────────────────────────────────────┐    │
+│  │ K-mer Embedding Layer (k=4, vocab=256)                   │    │
+│  │ Maps 4-mers to 64-dimensional vectors                   │    │
+│  └─────────────────────────────────────────────────────────┘    │
+│           │                                                     │
+│           ▼                                                     │
+│  ┌─────────────────────────────────────────────────────────┐    │
+│  │ Positional Encoding (Sinusoidal)                         │    │
+│  │ Adds sequence position awareness                         │    │
+│  └─────────────────────────────────────────────────────────┘    │
+│           │                                                     │
+│           ▼                                                     │
+│  ┌─────────────────────────────────────────────────────────┐    │
+│  │ Transformer Block 1 (4 attention heads)                  │    │
+│  │ Self-attention: captures long-range interactions       │    │
+│  └─────────────────────────────────────────────────────────┘    │
+│           │                                                     │
+│           ▼                                                     │
+│  ┌─────────────────────────────────────────────────────────┐    │
+│  │ Transformer Block 2                                      │    │
+│  └─────────────────────────────────────────────────────────┘    │
+│           │                                                     │
+│           ▼                                                     │
+│  ┌─────────────────────────────────────────────────────────┐    │
+│  │ Transformer Block 3                                      │    │
+│  └─────────────────────────────────────────────────────────┘    │
+│           │                                                     │
+│           ▼                                                     │
+│  ┌─────────────────────────────────────────────────────────┐    │
+│  │ Global Average Pooling                                    │    │
+│  │ Aggregates sequence representation                        │    │
+│  └─────────────────────────────────────────────────────────┘    │
+│           │                                                     │
+│           ▼                                                     │
+│  ┌─────────────────────────────────────────────────────────┐    │
+│  │ Efficacy Prediction Head                                  │    │
+│  │ FFN(64) → GELU → FFN(32) → GELU → FFN(1) → Sigmoid   │    │
+│  └─────────────────────────────────────────────────────────┘    │
+│           │                                                     │
+│           ▼                                                     │
+│  ┌─────────────────────────────────────────────────────────┐    │
+│  │ Hybrid Ensemble (60% DL + 40% Physics)                   │    │
+│  └─────────────────────────────────────────────────────────┘    │
+│           │                                                     │
+│           ▼                                                     │
+│  Output: Efficacy Score (0-100)                                 │
+│                                                                  │
+└─────────────────────────────────────────────────────────────────┘
+</code></pre>
+<h2>Model Parameters</h2>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>K-mer Size</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Vocabulary</td>
+<td>256 (4⁴)</td>
+</tr>
+<tr>
+<td>Embedding Dimension</td>
+<td>64</td>
+</tr>
+<tr>
+<td>Attention Heads</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Transformer Layers</td>
+<td>3</td>
+</tr>
+<tr>
+<td>Feed-Forward Dimension</td>
+<td>256</td>
+</tr>
+<tr>
+<td>Dropout</td>
+<td>0.1</td>
+</tr>
+<tr>
+<td><strong>Total Parameters</strong></td>
+<td>~191,000</td>
+</tr>
+</tbody>
+</table>
+<h2>Key Components</h2>
+<h3>1. K-mer Embedding</h3>
+<p>Instead of embedding single nucleotides (vocab=4), we embed all possible 4-mers (vocab=256):</p>
+<pre><code class="language-python">class KMerEmbedding(nn.Module):
+    def __init__(self, k: int = 4, embed_dim: int = 64):
+        self.vocab_size = 4 ** k  # 256 for k=4
+        self.embedding = nn.Embedding(self.vocab_size + 1, embed_dim)
+
+    def kmer_to_idx(self, kmer: str) -&gt; int:
+        &quot;&quot;&quot;Convert k-mer string to integer index.&quot;&quot;&quot;
+        val = 0
+        for c in kmer:
+            val = val * 4 + {'A': 0, 'C': 1, 'G': 2, 'T': 3}[c]
+        return val + 1
+
+    def forward(self, seq: str) -&gt; torch.Tensor:
+        &quot;&quot;&quot;Extract k-mers and return embeddings.&quot;&quot;&quot;
+        indices = [self.kmer_to_idx(seq[i:i+self.k]) 
+                   for i in range(len(seq) - self.k + 1)]
+        return self.embedding(torch.tensor(indices))
+</code></pre>
+<p><strong>Why K-mers?</strong>
+- Captures local sequence motifs (CpG islands, poly-A signals)
+- More biologically meaningful than single nucleotides
+- Used in DNABERT-2, other genomic foundation models</p>
+<h3>2. Positional Encoding</h3>
+<p>Allows the transformer to understand where each k-mer is in the sequence:</p>
+<pre><code class="language-python">class PositionalEncoding(nn.Module):
+    def __init__(self, d_model: int = 64, max_len: int = 128):
+        pe = torch.zeros(max_len, d_model)
+        position = torch.arange(0, max_len).unsqueeze(1)
+        div_term = torch.exp(torch.arange(0, d_model, 2) * (-math.log(10000.0) / d_model))
+
+        pe[:, 0::2] = torch.sin(position * div_term)
+        pe[:, 1::2] = torch.cos(position * div_term)
+        self.register_buffer('pe', pe)
+
+    def forward(self, x: torch.Tensor) -&gt; torch.Tensor:
+        return x + self.pe[:, :x.size(1)]
+</code></pre>
+<h3>3. Multi-Head Self-Attention</h3>
+<p>Allows attending to different parts of the sequence simultaneously:</p>
+<pre><code class="language-python">class MultiHeadAttention(nn.Module):
+    def __init__(self, embed_dim: int = 64, num_heads: int = 4):
+        self.num_heads = num_heads
+        self.head_dim = embed_dim // num_heads
+        self.qkv_proj = nn.Linear(embed_dim, 3 * embed_dim)
+        self.out_proj = nn.Linear(embed_dim, embed_dim)
+
+    def forward(self, x: torch.Tensor) -&gt; torch.Tensor:
+        batch_size, seq_len, _ = x.shape
+
+        qkv = self.qkv_proj(x).reshape(batch_size, seq_len, 3, self.num_heads, self.head_dim)
+        qkv = qkv.permute(2, 0, 3, 1, 4)
+        q, k, v = qkv[0], qkv[1], qkv[2]
+
+        attn_scores = torch.matmul(q, k.transpose(-2, -1)) / math.sqrt(self.head_dim)
+        attn_weights = F.softmax(attn_scores, dim=-1)
+
+        output = torch.matmul(attn_weights, v)
+        output = output.transpose(1, 2).reshape(batch_size, seq_len, -1)
+
+        return self.out_proj(output)
+</code></pre>
+<h3>4. Physics-Informed Features</h3>
+<p>We inject domain knowledge (thermodynamic rules) into the model:</p>
+<pre><code class="language-python">class PhysicsInformedFeatures:
+    def extract(self, seq: str) -&gt; dict:
+        gc = (seq.count('G') + seq.count('C')) / len(seq) * 100
+
+        # GC window scoring
+        gc_window_score = 10.0 if 35 &lt;= gc &lt;= 55 else (-8.0 if gc &lt; 30 or gc &gt; 60 else 3.0)
+
+        # Position-specific scoring
+        position_score = sum(self.position_prefs[i].get(seq[i], 0) 
+                            for i in range(min(len(seq), 20)))
+
+        # Dinucleotide penalties
+        dinuc_penalty = 0.0
+        if seq.endswith('AA'): dinuc_penalty -= 4.0
+        if 'GGGG' in seq or 'CCCC' in seq: dinuc_penalty -= 10.0
+
+        return {
+            'gc_content': gc,
+            'gc_window_score': gc_window_score,
+            'position_score': position_score,
+            'dinuc_penalty': dinuc_penalty,
+            # ... more features
+        }
+</code></pre>
+<h3>5. Hybrid Ensemble</h3>
+<p>Combines DL predictions with physics-based predictions:</p>
+<pre><code class="language-python">def predict(self, seq: str) -&gt; dict:
+    # Deep learning prediction
+    dl_efficacy = self.transformer(seq).item()
+
+    # Physics-based prediction
+    features = self.physics.extract(seq)
+    physics_efficacy = self._physics_predict(features)
+
+    # Weighted ensemble (60% DL + 40% Physics)
+    combined = 0.6 * dl_efficacy + 0.4 * physics_efficacy
+
+    return {
+        'dl_efficacy': round(dl_efficacy * 100, 1),
+        'physics_efficacy': round(physics_efficacy * 100, 1),
+        'combined_efficacy': round(combined * 100, 1),
+    }
+</code></pre>
+<hr />
+<h1>6. V8 Advanced Features</h1>
+<h2 id="61-resistance-evolution-model-cocktail-design">6.1 Resistance Evolution Model (Cocktail Design)</h2>
+<h3>Problem</h3>
+<p>A single siRNA can be evaded by a single point mutation in the target. This leads to resistance.</p>
+<h3>Solution</h3>
+<p>Design a <strong>cocktail of 3 non-overlapping siRNAs</strong> targeting different regions of the same gene. The pest would need 3 simultaneous mutations to develop resistance.</p>
+<h3>Algorithm</h3>
+<pre><code class="language-python">def design_cocktail(sequence, si_length=21, num_targets=3):
+    &quot;&quot;&quot;
+    Select non-overlapping siRNA candidates for cocktail design.
+    &quot;&quot;&quot;
+    # Generate all candidates
+    all_candidates = run_first_model_pipeline(sequence, ...)
+
+    # Select top non-overlapping candidates
+    cocktail = []
+    used_ranges = []
+
+    for cand in all_candidates:
+        # Skip unsafe candidates
+        if cand[&quot;safetyScore&quot;] &lt; 70:
+            continue
+
+        pos = cand[&quot;position&quot;]
+
+        # Check for overlap
+        overlaps = False
+        for (start, end) in used_ranges:
+            if not (pos + si_length &lt;= start or pos &gt;= end):
+                overlaps = True
+                break
+
+        if not overlaps:
+            cocktail.append(cand)
+            used_ranges.append((pos, pos + si_length))
+
+        if len(cocktail) &gt;= num_targets:
+            break
+
+    # Calculate synergy score
+    avg_safety = sum(c[&quot;safetyScore&quot;] for c in cocktail) / len(cocktail)
+    avg_efficacy = sum(c[&quot;efficiency&quot;] for c in cocktail) / len(cocktail)
+    coverage = len(cocktail) / num_targets * 100
+
+    synergy = (avg_safety * 0.4 + avg_efficacy * 0.4 + coverage * 0.2)
+
+    return {
+        &quot;cocktail&quot;: cocktail,
+        &quot;synergyScore&quot;: synergy,
+        # ...
+    }
+</code></pre>
+<h3>Cocktail Synergy Formula</h3>
+<pre><code>Synergy = (Avg_Safety × 0.4) + (Avg_Efficacy × 0.4) + (Coverage × 0.2)
+</code></pre>
+<hr />
+<h2 id="62-ai-chemical-modification-optimizer">6.2 AI Chemical Modification Optimizer</h2>
+<h3>Problem</h3>
+<p>Chemical modifications (2'-OMe, 2'-F, PS) can stabilize siRNA, but modifying the wrong positions reduces efficacy.</p>
+<h3>Solution</h3>
+<p>Monte-Carlo AI that tests 2000+ modification layouts to find the single best Therapeutic Index.</p>
+<h3>Modification Types</h3>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Stability Boost</th>
+<th>Ago2 Penalty</th>
+<th>Best For</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2'-OMe</td>
+<td>+2.5h/nt</td>
+<td>-1.8%/nt</td>
+<td>General use</td>
+</tr>
+<tr>
+<td>2'-F</td>
+<td>+3.0h/nt</td>
+<td>-0.8%/nt</td>
+<td>High stability needed</td>
+</tr>
+<tr>
+<td>PS</td>
+<td>+4.0h/nt</td>
+<td>-2.5%/nt</td>
+<td>Maximum nuclease resistance</td>
+</tr>
+</tbody>
+</table>
+<h3>Critical Rule: Ago2 Cleavage Zone</h3>
+<p><strong>Positions 9-12 must NEVER be modified!</strong> These are where RISC cuts the target mRNA.</p>
+<pre><code>Position: 1  2  3  4  5  6  7  8  9  10 11 12 13 14 15 16 17 18 19 20 21
+          │  │  │  │  │  │  │  │  │  │   │  │  │  │  │  │  │  │  │  │  │
+          ▼  ▼  ▼  ▼  ▼  ▼  ▼  ▼  ▼  ▼   ▼  ▼  ▼  ▼  ▼  ▼  ▼  ▼  ▼  ▼  ▼
+         [✓][✓][✓][✓][✓][✓][✓][✓][✗][✗][✗][✗][✓][✓][✓][✓][✓][✓][✓][✓][✓]
+                              ↑
+                      DO NOT MODIFY!
+</code></pre>
+<h3>Monte-Carlo Algorithm</h3>
+<pre><code class="language-python">def ai_optimize_modifications(sequence, iterations=2000):
+    &quot;&quot;&quot;
+    AI-driven chemical modification optimizer.
+    Tests random modification layouts to find the best Therapeutic Index.
+    &quot;&quot;&quot;
+    best_result = None
+    best_score = -1.0
+
+    for _ in range(iterations):
+        # Random modification type
+        mod_type = random.choice([&quot;2_ome&quot;, &quot;2_f&quot;, &quot;ps&quot;])
+
+        # Random positions (avoiding cleavage zone)
+        num_mods = random.randint(5, 14)
+        positions = random.sample(available_positions, num_mods)
+
+        # Skip over-modified (&gt;65%)
+        if num_mods / len(sequence) &gt; 0.65:
+            continue
+
+        # Score this layout
+        result = apply_modifications(sequence, mod_type, positions)
+
+        if result[&quot;therapeuticIndex&quot;] &gt; best_score:
+            best_score = result[&quot;therapeuticIndex&quot;]
+            best_result = result
+
+    return best_result
+</code></pre>
+<h3>Therapeutic Index Formula</h3>
+<pre><code>Therapeutic_Index = (Half_Life / 72 × 50) + (Ago2_Affinity / 100 × 50)
+
+Higher = Better balance of stability vs. efficacy
+</code></pre>
+<hr />
+<h2 id="63-rna-target-accessibility">6.3 RNA Target Accessibility</h2>
+<h3>Problem</h3>
+<p>Even a perfectly designed siRNA fails if the target site on the mRNA is buried in secondary structures.</p>
+<h3>Solution</h3>
+<p>Calculate the thermodynamic accessibility of the target site.</p>
+<h3>Theory</h3>
+<pre><code>For RISC to bind:
+1. siRNA must bind to target (ΔG_binding)
+2. Target site must be accessible (ΔG_unfolding)
+
+Net Energy = ΔG_binding - ΔG_unfolding
+
+If Net &lt; -10 kcal/mol: Site is accessible
+If Net &gt; 0 kcal/mol: Site is blocked
+</code></pre>
+<h3>Implementation</h3>
+<pre><code class="language-python">def calculate_accessibility(sequence, target_context=None):
+    &quot;&quot;&quot;
+    Calculate thermodynamic accessibility score.
+    &quot;&quot;&quot;
+    # Calculate binding energy
+    dg_binding = _calc_duplex_dg(sequence, complement)
+
+    # Estimate unfolding cost
+    dg_unfolding = _estimate_target_folding_dg(target_context)
+
+    # Net energy
+    dg_net = dg_binding - dg_unfolding
+
+    # Convert to 0-100 score
+    if dg_net &lt; -20: acc_score = 100.0
+    elif dg_net &lt; -15: acc_score = 90.0 + ((-15 - dg_net) / 5.0) * 10.0
+    elif dg_net &lt; -10: acc_score = 70.0 + ((-10 - dg_net) / 5.0) * 20.0
+    # ... more brackets
+
+    return {
+        &quot;accessibilityScore&quot;: acc_score,
+        &quot;accessibilityClass&quot;: classify(acc_score),
+        &quot;dgNet&quot;: dg_net,
+    }
+</code></pre>
+<h3>Accessibility Classification</h3>
+<table>
+<thead>
+<tr>
+<th>Score</th>
+<th>Class</th>
+<th>Interpretation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>80-100</td>
+<td>Open</td>
+<td>Highly accessible</td>
+</tr>
+<tr>
+<td>55-79</td>
+<td>Moderate</td>
+<td>Should bind normally</td>
+</tr>
+<tr>
+<td>30-54</td>
+<td>Restricted</td>
+<td>May have reduced efficacy</td>
+</tr>
+<tr>
+<td>0-29</td>
+<td>Blocked</td>
+<td>RISC cannot enter</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="64-rna-secondary-structure-prediction-new">6.4 RNA Secondary Structure Prediction (NEW!)</h2>
+<h3>Problem</h3>
+<p>Users want to <strong>VISUALIZE</strong> the actual 2D folding of the RNA, not just get a score. They want to see hairpins, loops, stems, and bulges.</p>
+<h3>Solution</h3>
+<p>Use <strong>Nussinov Algorithm</strong> for 2D RNA secondary structure prediction with ASCII visualization.</p>
+<h3>Theory</h3>
+<pre><code>RNA molecules fold into specific secondary structures based on Watson-Crick
+and Wobble base pairing:
+
+Base Pairing Rules:
+┌─────────────────────────────────────────────────────────────┐
+│  A ───── U    (2 hydrogen bonds)                            │
+│  G ───── C    (3 hydrogen bonds)  ← Strongest              │
+│  G ───── U    (Wobble pair - 2 bonds, less stable)          │
+└─────────────────────────────────────────────────────────────┘
+
+Structure Elements:
+┌─────────────────────────────────────────────────────────────┐
+│  Hairpin Loop:     Nucleotides forming a loop               │
+│  Stem:             Stacked base pairs                       │
+│  Internal Loop:    Gap in pairing on both strands           │
+│  Bulge:            Gap in pairing on one strand             │
+│  Multi-loop:       Junction of 3+ stems                     │
+└─────────────────────────────────────────────────────────────┘
+</code></pre>
+<h3>Nussinov Algorithm</h3>
+<p>The algorithm finds optimal folding by <strong>dynamic programming</strong>, maximizing base pairs:</p>
+<pre><code class="language-python">class NussinovSolver:
+    """
+    Nussinov Algorithm for RNA Secondary Structure Prediction.
+    
+    Key features:
+    - Maximizes number of base pairs
+    - No pseudoknots (no crossing structures)
+    - Minimum hairpin loop size: 3 nucleotides
+    - Only canonical base pairs (GC, AU, GU)
+    """
+    
+    def predict(self, sequence: str) -> dict:
+        # Step 1: Initialize DP table
+        self.dp = [[0.0 for _ in range(n)] for _ in range(n)]
+        
+        # Step 2: Fill DP table using recurrence
+        # Step 3: Traceback to find base pairs
+        # Step 4: Generate dot-bracket notation
+        # Step 5: Identify structural elements
+</code></pre>
+<h3>Base Pair Energy Parameters</h3>
+<table>
+<thead>
+<tr>
+<th>Pair</th>
+<th>Energy (kcal/mol)</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GC</td>
+<td>-3.0</td>
+<td>Strongest (3 H-bonds)</td>
+</tr>
+<tr>
+<td>CG</td>
+<td>-3.0</td>
+<td>Strongest (3 H-bonds)</td>
+</tr>
+<tr>
+<td>AU</td>
+<td>-2.0</td>
+<td>Moderate (2 H-bonds)</td>
+</tr>
+<tr>
+<td>UA</td>
+<td>-2.0</td>
+<td>Moderate (2 H-bonds)</td>
+</tr>
+<tr>
+<td>GU</td>
+<td>-1.0</td>
+<td>Wobble (2 H-bonds, less stable)</td>
+</tr>
+<tr>
+<td>UG</td>
+<td>-1.0</td>
+<td>Wobble (2 H-bonds, less stable)</td>
+</tr>
+</tbody>
+</table>
+<h3>Example Output</h3>
+<pre><code>Input Sequence: AUGGACUACAAGGACGACGA
+
+┌─────────────────────────────────────────────────────────────────────┐
+│ PREDICTED 2D STRUCTURE                                              │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                      │
+│  5'-A-U-G-G-A-C-U-A-C-A-A-G-G-A-C-G-A-C-G-A-3'                    │
+│         |   | |   | |   |   |   |   |                             │
+│        (A-U) (G-C) (U-A) (A-U) (G-C)                              │
+│                                                                      │
+│  Dot-Bracket: .(((.((...))..))..).                                 │
+│                                                                      │
+│  Structure Elements:                                                │
+│  • Stem helix (2 base pairs) positions 1-3                          │
+│  • Hairpin loop (3 nt) positions 4-6                               │
+│  • Stem helix (2 base pairs) positions 7-9                         │
+│  • 5' overhang (1 nt)                                              │
+│  • 3' overhang (1 nt)                                              │
+│                                                                      │
+│  Accessibility: 75% (Moderately Accessible)                         │
+│  Structure Score: 60/100                                            │
+│                                                                      │
+└─────────────────────────────────────────────────────────────────────┘
+</code></pre>
+<h3>Dot-Bracket Notation</h3>
+<table>
+<thead>
+<tr>
+<th>Symbol</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>.</td>
+<td>Unpaired nucleotide</td>
+</tr>
+<tr>
+<td>(</td>
+<td>Opening bracket (pairs with closing)</td>
+</tr>
+<tr>
+<td>)</td>
+<td>Closing bracket (pairs with opening)</td>
+</tr>
+</tbody>
+</table>
+<h3>API Endpoint</h3>
+<pre><code class="language-python">@app.route("/api/rna_structure", methods=["POST"])
+def rna_structure():
+    """
+    Predict RNA secondary structure using Nussinov algorithm.
+    
+    Returns:
+    - sequence: Cleaned RNA sequence
+    - dot_bracket: Structure notation
+    - structure_score: Stability score (0-100)
+    - num_base_pairs: Number of predicted pairs
+    - base_pairs: List of base pairs with positions
+    - elements: Structural elements
+    - accessibility_prediction: Accessibility analysis
+    - visual: ASCII visualization
+    """
+</code></pre>
+<hr />
+<h2 id="66-pdb-structure-visualization-new">6.6 PDB Structure Visualization (NEW!)</h2>
+<h3>Problem</h3>
+<p>Users need to <strong>visualize</strong> the 3D structure of siRNA molecules to understand how chemical modifications affect the structure.</p>
+<h3>Solution</h3>
+<p>Generate <strong>PDB (Protein Data Bank)</strong> files for RNA structures viewable in PyMOL, VMD, or Chimera.</p>
+<h3>A-Form RNA Geometry</h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Helical Radius</td>
+<td>9.0 Å</td>
+</tr>
+<tr>
+<td>Base Pair Rise</td>
+<td>2.56 Å</td>
+</tr>
+<tr>
+<td>Base Pair Twist</td>
+<td>32.7°</td>
+</tr>
+<tr>
+<td>Major Groove</td>
+<td>12.0 Å</td>
+</tr>
+<tr>
+<td>Minor Groove</td>
+<td>6.0 Å</td>
+</tr>
+</tbody>
+</table>
+<h3>Chemical Modification Representation</h3>
+<table>
+<thead>
+<tr>
+<th>Modification</th>
+<th>PDB Atom</th>
+<th>Color</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Native</td>
+<td>O2'</td>
+<td>Green</td>
+</tr>
+<tr>
+<td>2'-OMe</td>
+<td>CME, C1', C2', C3'</td>
+<td>Blue</td>
+</tr>
+<tr>
+<td>2'-F</td>
+<td>F2P</td>
+<td>Orange</td>
+</tr>
+<tr>
+<td>PS</td>
+<td>S</td>
+<td>Purple</td>
+</tr>
+</tbody>
+</table>
+<h3>PyMOL Visualization</h3>
+<pre><code class="language-python"># Load structures
+load native.pdb, native
+load modified.pdb, modified
+
+# Show as cartoon
+show cartoon
+
+# Color modifications
+color blue, resn MTL  # 2'-OMe
+color orange, resn F2P  # 2'-F
+color purple, resn PSU  # Phosphorothioate
+</code></pre>
+<hr />
+<h2 id="65-tissue-specific-off-target-filtering">6.5 Tissue-Specific Off-Target Filtering</h2>
+<h3>Problem</h3>
+<p>Standard homology checks flag genes as "risky" regardless of where the siRNA is delivered.</p>
+<h3>Solution</h3>
+<p>Check if off-target genes are expressed in the <strong>delivery tissue</strong>.</p>
+<h3>Theory</h3>
+<pre><code>If an off-target gene is only expressed in the heart,
+but we deliver siRNA to the liver,
+the off-target risk is effectively ZERO.
+</code></pre>
+<h3>Implementation</h3>
+<pre><code class="language-python">def check_tissue_off_target(gene, organism, delivery_tissue):
+    &quot;&quot;&quot;
+    Check if off-target gene is expressed in delivery tissue.
+    &quot;&quot;&quot;
+    db = load_tissue_database()
+    tissues = db[organism][&quot;tissues&quot;]
+
+    delivery_genes = tissues[delivery_tissue][&quot;expressed_genes&quot;]
+
+    is_expressed = gene.upper() in [g.upper() for g in delivery_genes]
+
+    if is_expressed:
+        threat = &quot;High&quot;
+    else:
+        other_tissues = [t for t in tissues if gene in tissues[t][&quot;expressed_genes&quot;]]
+        threat = &quot;Low&quot; if other_tissues else &quot;None&quot;
+
+    return {
+        &quot;isExpressedInDeliveryTissue&quot;: is_expressed,
+        &quot;effectiveThreatLevel&quot;: threat,
+    }
+</code></pre>
+<hr />
+<h1>7. API Reference</h1>
+<h2>7.1 Flask Endpoints (Port 5000)</h2>
+<h3>Main Pipeline</h3>
+<h4><code>POST /api/first_model</code></h4>
+<p>Run the complete V6 9-layer safety pipeline.</p>
+<p><strong>Request:</strong></p>
+<pre><code class="language-json">{
+  &quot;sequence&quot;: &quot;ATGCGTACGATCGATCG...&quot;,
+  &quot;siLength&quot;: 21,
+  &quot;nonTargetSequence&quot;: &quot;GATTACA...&quot;,
+  &quot;geneName&quot;: &quot;actin&quot;
+}
+</code></pre>
+<p><strong>Response:</strong></p>
+<pre><code class="language-json">{
+  &quot;candidates&quot;: [
+    {
+      &quot;position&quot;: 1,
+      &quot;sequence&quot;: &quot;ATGCGTACGATCGATCGATCG&quot;,
+      &quot;gcContent&quot;: 47.6,
+      &quot;safetyScore&quot;: 95.0,
+      &quot;efficiency&quot;: 85.2,
+      &quot;mfe&quot;: -28.45,
+      &quot;asymmetry&quot;: 1.23,
+      &quot;endStability&quot;: &quot;favorable&quot;,
+      &quot;matchLength&quot;: 0,
+      &quot;hasCpGMotif&quot;: false,
+      &quot;hasPolyRun&quot;: false,
+      &quot;hasPalindrome&quot;: false,
+      &quot;essentialityScore&quot;: 92.5,
+      &quot;compositeScore&quot;: 91.5,
+      &quot;status&quot;: &quot;CLEARED&quot;
+    }
+  ]
+}
+</code></pre>
+<hr />
+<h3>Cocktail Design</h3>
+<h4><code>POST /api/cocktail</code></h4>
+<p>Design multi-target siRNA cocktail.</p>
+<p><strong>Request:</strong></p>
+<pre><code class="language-json">{
+  &quot;sequence&quot;: &quot;ATGCGTACGATCG...&quot;,
+  &quot;siLength&quot;: 21,
+  &quot;nonTargetSequence&quot;: &quot;&quot;,
+  &quot;numTargets&quot;: 3
+}
+</code></pre>
+<p><strong>Response:</strong></p>
+<pre><code class="language-json">{
+  &quot;cocktail&quot;: [...],
+  &quot;numSelected&quot;: 3,
+  &quot;avgSafety&quot;: 95.3,
+  &quot;avgEfficacy&quot;: 87.2,
+  &quot;coveragePercent&quot;: 100.0,
+  &quot;synergyScore&quot;: 93.5
+}
+</code></pre>
+<hr />
+<h3>Chemical Modification</h3>
+<h4><code>POST /api/chem_ai</code></h4>
+<p>AI-optimized chemical modification.</p>
+<p><strong>Request:</strong></p>
+<pre><code class="language-json">{
+  &quot;sequence&quot;: &quot;ATGGACTACAAGGACGACGA&quot;
+}
+</code></pre>
+<p><strong>Response:</strong></p>
+<pre><code class="language-json">{
+  &quot;modifiedSequence&quot;: &quot;[A*][T*][G*][G*]A[C*]...&quot;,
+  &quot;modificationType&quot;: &quot;2'-Fluoro (2'-F)&quot;,
+  &quot;stabilityHalfLife&quot;: 36.6,
+  &quot;ago2Affinity&quot;: 85.6,
+  &quot;therapeuticIndex&quot;: 68.2,
+  &quot;searchStats&quot;: {
+    &quot;totalIterations&quot;: 2000,
+    &quot;layoutsEvaluated&quot;: 1773
+  }
+}
+</code></pre>
+<hr />
+<h3>RNA Accessibility</h3>
+<h4><code>POST /api/rna_accessibility</code></h4>
+<p>Calculate RNA target accessibility.</p>
+<p><strong>Request:</strong></p>
+<pre><code class="language-json">{
+  &quot;sequence&quot;: &quot;ATGGACTACAAGGACGACGA&quot;,
+  &quot;targetContext&quot;: &quot;AUGCUGCUAUGCUG...&quot;
+}
+</code></pre>
+<p><strong>Response:</strong></p>
+<pre><code class="language-json">{
+  &quot;dgBinding&quot;: -32.5,
+  &quot;dgUnfolding&quot;: 8.7,
+  &quot;dgNet&quot;: -23.8,
+  &quot;accessibilityScore&quot;: 95.0,
+  &quot;accessibilityClass&quot;: &quot;Open&quot;
+}
+</code></pre>
+<hr />
+<h3>Tissue Filter</h3>
+<h4><code>POST /api/tissue_filter</code></h4>
+<p>Filter off-targets by tissue expression.</p>
+<p><strong>Request:</strong></p>
+<pre><code class="language-json">{
+  &quot;sequence&quot;: &quot;ATGGACTACAAGGACGACGA&quot;,
+  &quot;offTargetGenes&quot;: [&quot;CYP3A4&quot;, &quot;MBP&quot;],
+  &quot;organism&quot;: &quot;homo_sapiens&quot;,
+  &quot;deliveryTissue&quot;: &quot;liver&quot;
+}
+</code></pre>
+<p><strong>Response:</strong></p>
+<pre><code class="language-json">{
+  &quot;totalOffTargets&quot;: 2,
+  &quot;genuineThreats&quot;: 1,
+  &quot;clearedAsSafe&quot;: 1,
+  &quot;adjustedSafetyRating&quot;: &quot;CAUTION&quot;,
+  &quot;details&quot;: [...]
+}
+</code></pre>
+<hr />
+<h2>7.2 FastAPI Endpoints (Port 8000)</h2>
+<h3>Health Check</h3>
+<h4><code>GET /health</code></h4>
+<p>Check if RiNALMo-v2 is running.</p>
+<p><strong>Response:</strong></p>
+<pre><code class="language-json">{
+  &quot;status&quot;: &quot;healthy&quot;,
+  &quot;model&quot;: &quot;RiNALMo-v2&quot;,
+  &quot;torch_available&quot;: true,
+  &quot;features&quot;: [&quot;mfe&quot;, &quot;asymmetry&quot;, &quot;transformer&quot;, &quot;physics_hybrid&quot;]
+}
+</code></pre>
+<hr />
+<h3>Batch Prediction</h3>
+<h4><code>POST /predict/efficacy/batch</code></h4>
+<p>Get efficacy predictions from RiNALMo-v2.</p>
+<p><strong>Request:</strong></p>
+<pre><code class="language-json">{
+  &quot;sequences&quot;: [
+    &quot;ATGGACTACAAGGACGACGA&quot;,
+    &quot;GCTAGCTAGCTAGCTAGCTA&quot;
+  ]
+}
+</code></pre>
+<p><strong>Response:</strong></p>
+<pre><code class="language-json">{
+  &quot;predictions&quot;: [
+    {
+      &quot;sequence&quot;: &quot;ATGGACTACAAGGACGACGA&quot;,
+      &quot;efficacy_score&quot;: 85.7,
+      &quot;dl_efficacy&quot;: 88.2,
+      &quot;physics_efficacy&quot;: 82.1,
+      &quot;mfe_score&quot;: -28.45,
+      &quot;asymmetry_score&quot;: 1.23,
+      &quot;gc_content&quot;: 47.6,
+      &quot;end_stability&quot;: &quot;favorable&quot;,
+      &quot;model_info&quot;: {
+        &quot;name&quot;: &quot;RiNALMo-v2&quot;,
+        &quot;parameters&quot;: 191297
+      }
+    }
+  ],
+  &quot;model_name&quot;: &quot;RiNALMo-v2&quot;,
+  &quot;model_type&quot;: &quot;Hybrid Transformer + Physics&quot;
+}
+</code></pre>
+<hr />
+<h1>8. Data Flow Diagrams</h1>
+<h2>8.1 Complete Pipeline Flow</h2>
+<pre><code>┌──────────────────────────────────────────────────────────────────────────────┐
+│                         COMPLETE siRNA DESIGN PIPELINE                         │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+USER INPUT
+    │
+    ▼
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ 1. INPUT VALIDATION                                                         │
+│    - Parse FASTA / raw sequence                                             │
+│    - Validate nucleotides (A, T, C, G)                                      │
+│    - Check minimum length (21 bp)                                            │
+└──────────────────────────────────────────────────────────────────────────────┘
+    │
+    ▼
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ 2. CANDIDATE GENERATION                                                     │
+│    - Generate all 21-nt windows                                             │
+│    - For each: calculate GC, MFE, asymmetry                                 │
+└──────────────────────────────────────────────────────────────────────────────┘
+    │
+    ├──────────────────┬──────────────────┐
+    ▼                  ▼                  ▼
+┌─────────┐      ┌─────────┐       ┌─────────┐
+│ V6      │      │ BLOOM   │       │ ESSEN-  │
+│ Safety  │      │ FILTER  │       │ TIALITY │
+│ Engine  │      │ Index   │       │ Scoring │
+└─────────┘      └─────────┘       └─────────┘
+    │                  │                  │
+    │                  │                  │
+    ▼                  ▼                  ▼
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ 3. SAFETY FILTERING (9 Layers)                                              │
+│    Layer 1-3: Thermodynamic properties                                       │
+│    Layer 4-6: Homology checks                                               │
+│    Layer 7-9: Sequence quality                                              │
+│                                                                              │
+│    OUTPUT: Safety Score (0-100)                                              │
+└──────────────────────────────────────────────────────────────────────────────┘
+    │
+    ▼
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ 4. EFFICACY SCORING                                                         │
+│    - Reynolds rules (position-specific)                                      │
+│    - GC content optimization                                                │
+│    - Dinucleotide composition                                               │
+│                                                                              │
+│    OUTPUT: Efficacy Score (0-100)                                             │
+└──────────────────────────────────────────────────────────────────────────────┘
+    │
+    ▼
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ 5. RiNALMo-v2 ENHANCEMENT (Optional)                                         │
+│    - K-mer embeddings                                                        │
+│    - Transformer attention                                                   │
+│    - Physics-informed features                                               │
+│    - Hybrid ensemble                                                        │
+│                                                                              │
+│    OUTPUT: Combined Efficacy (0-100)                                          │
+└──────────────────────────────────────────────────────────────────────────────┘
+    │
+    ▼
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ 6. COMPOSITE SCORING                                                        │
+│                                                                              │
+│    Composite = (Safety × 0.4) + (Efficacy × 0.3) + (Essentiality × 0.3)      │
+│                                                                              │
+│    OUTPUT: Composite Score (0-100)                                            │
+└──────────────────────────────────────────────────────────────────────────────┘
+    │
+    ▼
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ 7. RANKING &amp; FILTERING                                                      │
+│    - Sort by composite score                                                 │
+│    - Filter by minimum thresholds                                            │
+│    - Status: CLEARED (&gt;85) or REVIEW (&lt;85)                                  │
+└──────────────────────────────────────────────────────────────────────────────┘
+    │
+    ▼
+CANDIDATE RESULTS
+    │
+    ├──────────────────┬──────────────────┐
+    ▼                  ▼                  ▼
+┌─────────┐      ┌─────────┐       ┌─────────┐
+│ VIEW IN │      │ CERTI-  │       │ EXPORT  │
+│ TABLE   │      │ FICATE  │       │ CSV     │
+└─────────┘      └─────────┘       └─────────┘
+</code></pre>
+<h2>8.2 V8 Advanced Features Flow</h2>
+<pre><code>┌──────────────────────────────────────────────────────────────────────────────┐
+│                         V8 ADVANCED FEATURES                                  │
+└──────────────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────┐
+│  COCKTAIL DESIGN                │
+├─────────────────────────────────┤
+│                                  │
+│  Input: Top N candidates        │
+│    │                           │
+│    ▼                           │
+│  ┌───────────────────────────┐  │
+│  │ Non-overlap check         │  │
+│  │ (range intersection)      │  │
+│  └───────────────────────────┘  │
+│    │                           │
+│    ▼                           │
+│  ┌───────────────────────────┐  │
+│  │ Synergy calculation       │  │
+│  │ (weighted average)        │  │
+│  └───────────────────────────┘  │
+│    │                           │
+│    ▼                           │
+│  Output: 3 siRNAs + synergy    │
+│                                  │
+└─────────────────────────────────┘
+
+┌─────────────────────────────────┐
+│  AI CHEMICAL OPTIMIZER          │
+├─────────────────────────────────┤
+│                                  │
+│  Input: 21-nt siRNA            │
+│    │                           │
+│    ▼                           │
+│  ┌───────────────────────────┐  │
+│  │ Monte-Carlo search       │  │
+│  │ (2000 iterations)         │  │
+│  └───────────────────────────┘  │
+│    │                           │
+│    ├───────────────────────────┤
+│    ▼                           │
+│  ┌───────────────────────────┐  │
+│  │ Score each layout         │  │
+│  │ (Therapeutic Index)       │  │
+│  └───────────────────────────┘  │
+│    │                           │
+│    ▼                           │
+│  Output: Best modification      │
+│  pattern + stats               │
+│                                  │
+└─────────────────────────────────┘
+
+┌─────────────────────────────────┐
+│  RNA ACCESSIBILITY              │
+├─────────────────────────────────┤
+│                                  │
+│  Input: Target mRNA site        │
+│    │                           │
+│    ▼                           │
+│  ┌───────────────────────────┐  │
+│  │ ΔG binding calculation     │  │
+│  └───────────────────────────┘  │
+│    │                           │
+│    ▼                           │
+│  ┌───────────────────────────┐  │
+│  │ ΔG unfolding estimation    │  │
+│  └───────────────────────────┘  │
+│    │                           │
+│    ▼                           │
+│  ┌───────────────────────────┐  │
+│  │ Net accessibility score   │  │
+│  └───────────────────────────┘  │
+│    │                           │
+│    ▼                           │
+│  Output: 0-100 + class         │
+│                                  │
+└─────────────────────────────────┘
+
+┌─────────────────────────────────┐
+│  TISSUE FILTER                  │
+├─────────────────────────────────┤
+│                                  │
+│  Input: Off-target genes       │
+│    │                           │
+│    ▼                           │
+│  ┌───────────────────────────┐  │
+│  │ Query tissue database     │  │
+│  │ (liver, lung, etc.)      │  │
+│  └───────────────────────────┘  │
+│    │                           │
+│    ▼                           │
+│  ┌───────────────────────────┐  │
+│  │ Check expression in       │  │
+│  │ delivery tissue           │  │
+│  └───────────────────────────┘  │
+│    │                           │
+│    ▼                           │
+│  Output: Threat levels          │
+│  (High/Low/None)               │
+│                                  │
+└─────────────────────────────────┘
+</code></pre>
+<hr />
+<h1>9. Implementation Details</h1>
+<h2>9.1 File-by-File Reference</h2>
+<h3><code>web_app/engine.py</code></h3>
+<table>
+<thead>
+<tr>
+<th>Function</th>
+<th>Lines</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>calculate_gc_content()</code></td>
+<td>66-71</td>
+<td>GC percentage calculation</td>
+</tr>
+<tr>
+<td><code>calculate_mfe()</code></td>
+<td>74-90</td>
+<td>Minimum free energy</td>
+</tr>
+<tr>
+<td><code>calculate_asymmetry()</code></td>
+<td>96-115</td>
+<td>Strand asymmetry</td>
+</tr>
+<tr>
+<td><code>calculate_shannon_entropy()</code></td>
+<td>119-130</td>
+<td>Sequence complexity</td>
+</tr>
+<tr>
+<td><code>has_cpg_motif()</code></td>
+<td>133-134</td>
+<td>CpG detection</td>
+</tr>
+<tr>
+<td><code>has_poly_run()</code></td>
+<td>137-142</td>
+<td>Poly-run detection</td>
+</tr>
+<tr>
+<td><code>check_palindrome()</code></td>
+<td>159-168</td>
+<td>Hairpin detection</td>
+</tr>
+<tr>
+<td><code>find_max_homology()</code></td>
+<td>178-195</td>
+<td>15-mer homology</td>
+</tr>
+<tr>
+<td><code>calculate_efficacy()</code></td>
+<td>207-287</td>
+<td>Reynolds scoring</td>
+</tr>
+<tr>
+<td><code>run_first_model_pipeline()</code></td>
+<td>291-441</td>
+<td>Main pipeline</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3><code>web_app/essentiality.py</code></h3>
+<table>
+<thead>
+<tr>
+<th>Function</th>
+<th>Lines</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>calculate_essentiality()</code></td>
+<td>61-94</td>
+<td>Main scoring function</td>
+</tr>
+<tr>
+<td><code>_score_single_gene()</code></td>
+<td>97-179</td>
+<td>Single gene scoring</td>
+</tr>
+<tr>
+<td><code>get_available_genes()</code></td>
+<td>182-186</td>
+<td>List all genes</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Scoring Formula:</strong></p>
+<pre><code>Total = DEG (40) + OGEE (0-30) + RNAi (0-25) + Conservation (5-15)
+Max = 100
+</code></pre>
+<hr />
+<h3><code>web_app/bloom_filter.py</code></h3>
+<table>
+<thead>
+<tr>
+<th>Class</th>
+<th>Lines</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>BloomFilter</code></td>
+<td>11-98</td>
+<td>Probabilistic set membership</td>
+</tr>
+<tr>
+<td><code>GenomeBloomIndex</code></td>
+<td>100-204</td>
+<td>Genome k-mer indexing</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Memory Efficiency:</strong>
+| Genome Size | Raw Storage | Bloom Filter | Compression |
+|------------|------------|--------------|-------------|
+| 100 MB | 100 MB | ~7 MB | 14× |
+| 500 MB | 500 MB | ~35 MB | 14× |
+| 3 GB | 3 GB | ~210 MB | 14× |</p>
+<hr />
+<h3><code>backend/main.py</code></h3>
+<table>
+<thead>
+<tr>
+<th>Class/Function</th>
+<th>Lines</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>KMerEmbedding</code></td>
+<td>131-165</td>
+<td>K-mer to vector</td>
+</tr>
+<tr>
+<td><code>PositionalEncoding</code></td>
+<td>167-193</td>
+<td>Position awareness</td>
+</tr>
+<tr>
+<td><code>MultiHeadAttention</code></td>
+<td>195-231</td>
+<td>Self-attention</td>
+</tr>
+<tr>
+<td><code>TransformerBlock</code></td>
+<td>233-250</td>
+<td>Transformer layer</td>
+</tr>
+<tr>
+<td><code>RiNALMoV2</code></td>
+<td>252-395</td>
+<td>Full model</td>
+</tr>
+<tr>
+<td><code>PhysicsInformedFeatures</code></td>
+<td>397-518</td>
+<td>Domain features</td>
+</tr>
+<tr>
+<td><code>HybridEfficacyPredictor</code></td>
+<td>520-615</td>
+<td>Ensemble predictor</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>9.2 Database Schemas</h2>
+<h3>SQLite: Sequence History</h3>
+<pre><code class="language-sql">CREATE TABLE sequence_logs (
+    id INTEGER PRIMARY KEY,
+    audit_hash VARCHAR(32) UNIQUE,
+    sequence VARCHAR(100),
+    gc_content FLOAT,
+    efficacy FLOAT,
+    safety_score FLOAT,
+    risk_factors TEXT,
+    timestamp DATETIME
+);
+</code></pre>
+<h3>JSON: Essential Genes</h3>
+<pre><code class="language-json">{
+  &quot;actin&quot;: {
+    &quot;essentiality&quot;: &quot;essential&quot;,
+    &quot;organism&quot;: &quot;Drosophila melanogaster&quot;,
+    &quot;evidence&quot;: &quot;RNAi screening&quot;
+  }
+}
+</code></pre>
+<h3>JSON: Tissue Expression</h3>
+<pre><code class="language-json">{
+  &quot;homo_sapiens&quot;: {
+    &quot;tissues&quot;: {
+      &quot;liver&quot;: {
+        &quot;expressed_genes&quot;: [&quot;ALB&quot;, &quot;CYP3A4&quot;, &quot;APOB&quot;],
+        &quot;notes&quot;: &quot;Primary RNAi delivery target&quot;
+      }
+    }
+  }
+}
+</code></pre>
+<hr />
+<h1>10. Testing Guide</h1>
+<h2>10.1 Manual Testing</h2>
+<h3>Test 1: Basic Pipeline</h3>
+<ol>
+<li>Open http://localhost:5000</li>
+<li>Click "RUN DL PIPELINE" with demo data</li>
+<li>Verify candidates appear in table</li>
+<li>Check safety scores vary (not all 100%)</li>
+</ol>
+<h3>Test 2: RiNALMo-v2 Integration</h3>
+<ol>
+<li>Ensure FastAPI server running on port 8000</li>
+<li>Select "RiNALMo-v2 Transformer" in dropdown</li>
+<li>Run pipeline</li>
+<li>Check for DL efficacy scores in results</li>
+</ol>
+<h3>Test 3: Cocktail Design</h3>
+<ol>
+<li>Run pipeline to generate candidates</li>
+<li>Click "Design Multi-Target Cocktail"</li>
+<li>Verify 3 non-overlapping siRNAs selected</li>
+<li>Check synergy score &gt; 85</li>
+</ol>
+<h3>Test 4: AI Chemical Optimization</h3>
+<ol>
+<li>Click "AI Chemical Optimization" button</li>
+<li>Enter sequence: <code>ATGGACTACAAGGACGACGA</code></li>
+<li>Verify modification pattern appears</li>
+<li>Check Therapeutic Index &gt; 60</li>
+</ol>
+<h3>Test 5: RNA Accessibility</h3>
+<ol>
+<li>Click "RNA Accessibility Check"</li>
+<li>Enter sequence</li>
+<li>Verify score and classification</li>
+</ol>
+<h2>10.2 API Testing</h2>
+<pre><code class="language-bash"># Health check
+curl http://localhost:8000/health
+
+# Batch prediction
+curl -X POST http://localhost:5000/api/first_model \
+  -H &quot;Content-Type: application/json&quot; \
+  -d '{&quot;sequence&quot;:&quot;ATGGACTACAAGGACGACGATGACAAG&quot;,&quot;siLength&quot;:21}'
+
+# Cocktail design
+curl -X POST http://localhost:5000/api/cocktail \
+  -H &quot;Content-Type: application/json&quot; \
+  -d '{&quot;sequence&quot;:&quot;ATGGACTACAAGGACGACGATGACAAG&quot;,&quot;numTargets&quot;:3}'
+
+# AI chemical optimization
+curl -X POST http://localhost:5000/api/chem_ai \
+  -H &quot;Content-Type: application/json&quot; \
+  -d '{&quot;sequence&quot;:&quot;ATGGACTACAAGGACGACGA&quot;}'
+</code></pre>
+<hr />
+<h1>Appendix A: Glossary</h1>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Definition</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>siRNA</strong></td>
+<td>Small Interfering RNA - 21-23 nucleotide RNA duplex</td>
+</tr>
+<tr>
+<td><strong>RISC</strong></td>
+<td>RNA-Induced Silencing Complex - cellular machinery that executes RNAi</td>
+</tr>
+<tr>
+<td><strong>MFE</strong></td>
+<td>Minimum Free Energy - thermodynamic stability measure</td>
+</tr>
+<tr>
+<td><strong>ΔG</strong></td>
+<td>Free Energy Change - negative = favorable reaction</td>
+</tr>
+<tr>
+<td><strong>ΔH</strong></td>
+<td>Enthalpy - heat energy of bonding</td>
+</tr>
+<tr>
+<td><strong>ΔS</strong></td>
+<td>Entropy - disorder measure</td>
+</tr>
+<tr>
+<td><strong>Bloom Filter</strong></td>
+<td>Probabilistic data structure for O(1) membership testing</td>
+</tr>
+<tr>
+<td><strong>K-mer</strong></td>
+<td>Substring of length k</td>
+</tr>
+<tr>
+<td><strong>CpG</strong></td>
+<td>Cytosine-phosphate-Guanine - immunostimulatory motif</td>
+</tr>
+<tr>
+<td><strong>Seed Region</strong></td>
+<td>Positions 2-8 of siRNA - critical for target recognition</td>
+</tr>
+<tr>
+<td><strong>Ago2</strong></td>
+<td>Argonaute 2 - catalytic component of RISC</td>
+</tr>
+<tr>
+<td><strong>Therapeutic Index</strong></td>
+<td>Balance of stability vs. efficacy</td>
+</tr>
+<tr>
+<td><strong>DEG</strong></td>
+<td>Database of Essential Genes</td>
+</tr>
+<tr>
+<td><strong>OGEE</strong></td>
+<td>Online GEne Essentiality database</td>
+</tr>
+<tr>
+<td><strong>RNAi</strong></td>
+<td>RNA Interference - gene silencing mechanism</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h1>Appendix B: References</h1>
+<ol>
+<li>
+<p><strong>SantaLucia, J. (1998)</strong>. A unified view of polymer, dumbbell, and oligonucleotide DNA nearest-neighbor thermodynamics. PNAS, 95(4), 1460-1465.</p>
+</li>
+<li>
+<p><strong>Reynolds, A. et al. (2004)</strong>. Rational siRNA design for RNA interference. Nature Biotechnology, 22(3), 326-330.</p>
+</li>
+<li>
+<p><strong>Ui-Tei, K. et al. (2004)</strong>. Guidelines for the selection of highly effective siRNA sequences for mammalian and chick RNA interference. Nucleic Acids Research, 32(3), 936-948.</p>
+</li>
+<li>
+<p><strong>Mathews, D. et al. (1999)</strong>. Expanded nearest-neighbor parameters for predicting duplex free energy. PNAS, 96(9), 4893-4899.</p>
+</li>
+<li>
+<p><strong>Zhou, J. &amp; Rossi, J. (2017)</strong>. Aptamers as targeted therapeutics: current potential and challenges. Nature Reviews Drug Discovery, 16(3), 181-202.</p>
+</li>
+</ol>
+<hr />
+<h1>Document Version History</h1>
+<table>
+<thead>
+<tr>
+<th>Version</th>
+<th>Date</th>
+<th>Changes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1.0</td>
+<td>March 2026</td>
+<td>Initial release</td>
+</tr>
+<tr>
+<td>1.1</td>
+<td>March 2026</td>
+<td>Added V8 features</td>
+</tr>
+<tr>
+<td>1.2</td>
+<td>March 2026</td>
+<td>Added API reference</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p><strong>End of Document</strong></p>
+<p><em>Helix-Zero V8 :: Regulatory-Grade RNA Interference Design Engine</em>
+<em>© 2026 Helix-Zero Laboratories</em></p>
+</body>
+</html>

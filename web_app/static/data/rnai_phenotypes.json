@@ -1,0 +1,12 @@
+{
+  "actin": "lethal",
+  "tubulin": "lethal",
+  "caspase": "lethal",
+  "ef1a": "sterile",
+  "rps18": "lethal",
+  "gapdh": "viable",
+  "hsp90": "sterile",
+  "cox1": "lethal",
+  "nadh": "lethal",
+  "atpb": "lethal"
+}

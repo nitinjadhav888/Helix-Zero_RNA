@@ -1,0 +1,65 @@
+{
+  "homo_sapiens": {
+    "description": "Human (Homo sapiens) tissue expression atlas",
+    "tissues": {
+      "liver": {
+        "expressed_genes": ["ALB", "CYP3A4", "CYP2C9", "APOB", "APOE", "FGA", "F2", "PCSK9", "LDLR"],
+        "notes": "Primary site for RNAi therapeutics (Alnylam targets)"
+      },
+      "lung": {
+        "expressed_genes": ["SFTPB", "SFTPC", "CFTR", "AGER", "SCGB1A1", "NKX2-1"],
+        "notes": "Pulmonary delivery target"
+      },
+      "heart": {
+        "expressed_genes": ["MYH7", "TNNT2", "SCN5A", "CACNA1C", "PLN", "RYR2", "ACTC1"],
+        "notes": "Cardiac muscle specific"
+      },
+      "kidney": {
+        "expressed_genes": ["AQP2", "SLC12A1", "UMOD", "NPHS1", "NPHS2", "WT1"],
+        "notes": "Renal-specific expression"
+      },
+      "brain": {
+        "expressed_genes": ["GFAP", "MBP", "SNAP25", "SYP", "MAP2", "NEFL", "APP", "MAPT"],
+        "notes": "CNS expression; blood-brain barrier must be crossed"
+      },
+      "muscle": {
+        "expressed_genes": ["DMD", "DYSF", "CAPN3", "DMPK", "TTN", "MYH2", "ACTA1"],
+        "notes": "Skeletal muscle; relevant for muscular dystrophy"
+      }
+    }
+  },
+  "apis_mellifera": {
+    "description": "Honeybee (Apis mellifera) tissue expression atlas",
+    "tissues": {
+      "midgut": {
+        "expressed_genes": ["vg", "actin", "tubulin", "hsp70", "catalase", "nos"],
+        "notes": "Primary target for oral RNAi delivery (crop → midgut)"
+      },
+      "fat_body": {
+        "expressed_genes": ["vg", "methyl", "hsp90", "cact", "rel", "dif"],
+        "notes": "Equivalent to mammalian liver; vitellogenin production"
+      },
+      "brain": {
+        "expressed_genes": ["dop1", "oct1", "ach", "gaba", "mb-pcp"],
+        "notes": "Bee central nerve cord"
+      },
+      "ovaries": {
+        "expressed_genes": ["vg", "osk", "nos", "pum", "bam"],
+        "notes": "Queen reproductive tissue"
+      }
+    }
+  },
+  "drosophila_melanogaster": {
+    "description": "Fruit fly (Drosophila melanogaster) model organism atlas",
+    "tissues": {
+      "whole_body": {
+        "expressed_genes": ["actin", "tubulin", "hsp70", "w", "e", "y", "vg", "dpp", "wg"],
+        "notes": "Model organism; all tissues broadly expressed"
+      },
+      "fat_body": {
+        "expressed_genes": ["yp1", "yp2", "yp3", "lsp1a", "lsp2"],
+        "notes": "Drosophila fat body for metabolic studies"
+      }
+    }
+  }
+}

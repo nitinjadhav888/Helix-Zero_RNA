@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Helix-Zero V8 :: Molecular Engineering Suite</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="bg-dark text-light">
+
+    <!-- Glowing Background Orbs -->
+    <div class="orb orb-blue"></div>
+    <div class="orb orb-purple"></div>
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-glass border-bottom border-secondary mb-4 sticky-top">
+        <div class="container-fluid px-4">
+            <a class="navbar-brand fw-bold d-flex align-items-center gap-2" href="#">
+                <i class="fa-solid fa-dna text-info"></i> HELIX-ZERO V8
+            </a>
+            <div class="d-flex align-items-center gap-3">
+                <button class="btn btn-sm btn-outline-light rounded-pill" id="viewHistoryBtn" data-bs-toggle="modal" data-bs-target="#historyModal"><i class="fa-solid fa-database text-warning"></i> SQL Logs</button>
+                <span class="badge bg-primary rounded-pill"><i class="fa-solid fa-robot"></i> Agentic Active</span>
+                <span class="badge bg-success rounded-pill"><i class="fa-solid fa-server"></i> Flask Monolith</span>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid px-4 mb-5 pb-5">
+        <div class="row g-4">
+            <!-- Sidebar / Controls -->
+            <div class="col-lg-3">
+                <div class="card bg-glass border-secondary shadow-lg h-100">
+                    <div class="card-header border-secondary bg-transparent py-3">
+                        <h5 class="card-title fw-bold mb-0 text-info"><i class="fa-solid fa-sliders"></i> AI Pipeline Controls</h5>
+                    </div>
+                    <div class="card-body sequence-form">
+                        <form id="pipeline-form">
+                            <!-- File Uploads -->
+                            <div class="mb-3 p-3 border border-secondary rounded bg-dark">
+                                <label class="form-label text-info fw-bold text-uppercase small"><i class="fa-solid fa-file-upload"></i> Upload Target Genome (.fasta/.txt)</label>
+                                <input class="form-control form-control-sm bg-dark text-light border-secondary mb-3" type="file" id="targetFile" accept=".txt,.fasta,.fna">
+                                
+                                <label class="form-label text-success fw-bold text-uppercase small"><i class="fa-solid fa-shield-virus"></i> Upload Non-Target Genome (e.g., Bee)</label>
+                                <input class="form-control form-control-sm bg-dark text-light border-secondary mb-2" type="file" id="nonTargetFile" accept=".txt,.fasta,.fna">
+                                <button type="button" class="btn btn-sm btn-outline-success w-100 mb-2" id="loadDemoNonTarget">
+                                    <i class="fa-solid fa-flask"></i> Load Demo Non-Target
+                                </button>
+                                <button type="button" class="btn btn-sm btn-outline-secondary w-100" id="buildBloomBtn">
+                                    <i class="fa-solid fa-filter"></i> Build Bloom Index <span class="badge bg-secondary ms-1" id="bloomStatusBadge">Not Built</span>
+                                </button>
+                            </div>
+
+                            <!-- Target Gene Name (Essentiality) -->
+                            <div class="mb-3">
+                                <label class="form-label text-secondary fw-bold text-uppercase small"><i class="fa-solid fa-crosshairs text-danger"></i> Target Gene Name</label>
+                                <input type="text" class="form-control bg-dark text-light" id="geneName" placeholder="e.g. actin, tubulin, caspase" list="geneList">
+                                <datalist id="geneList"></datalist>
+                                <small class="text-secondary">For essentiality scoring (DEG/OGEE/RNAi)</small>
+                            </div>
+
+                            <!-- Target Genome Input -->
+                            <div class="mb-4">
+                                <label class="form-label text-secondary fw-bold text-uppercase small">Or Paste Target Transcript</label>
+                                <textarea class="form-control bg-dark text-info font-monospace" id="targetGenome" rows="4" placeholder=">Target_Gene_A&#10;ATGCGTACG..."></textarea>
+                            </div>
+
+                            <!-- Neural Net Settings -->
+                            <div class="mb-4">
+                                <label class="form-label text-secondary fw-bold text-uppercase small">Deep Learning Scoring Module</label>
+                                <select class="form-select bg-dark text-light" id="mlMode">
+                                    <option value="legacy">Legacy SVM (Reynolds Rules)</option>
+                                    <option value="rinalmo_v2" selected>RiNALMo-v2 Transformer ⚡ ACTIVE</option>
+                                    <option value="oligograph_stub" disabled>OligoGraph (Pending Port)</option>
+                                </select>
+                            </div>
+
+                            <!-- Chemical Armor removed from V8 sidebar; keep hidden default for compatibility -->
+                            <input type="hidden" id="chemMod" value="none">
+
+                            <!-- Parameters -->
+                            <div class="row g-3 mb-4">
+                                <div class="col-6">
+                                    <label class="form-label text-secondary fw-bold text-uppercase small">Length</label>
+                                    <input type="number" class="form-control bg-dark text-light" id="siLength" value="21">
+                                </div>
+                                <div class="col-6">
+                                    <label class="form-label text-secondary fw-bold text-uppercase small">Batch Size</label>
+                                    <input type="number" class="form-control bg-dark text-light" id="batchSize" value="100">
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn btn-info w-100 py-3 fw-bold text-dark glow-btn" id="runPipelineBtn">
+                                <span><i class="fa-solid fa-bolt"></i> RUN DL PIPELINE</span>
+                            </button>
+
+                            <!-- Cocktail Design Button -->
+                            <button type="button" class="btn btn-outline-warning w-100 py-2 fw-bold mt-3" id="cocktailBtn">
+                                <i class="fa-solid fa-vials"></i> Design Multi-Target Cocktail
+                            </button>
+
+                            <!-- V8 Advanced Features -->
+                            <div class="mt-4 p-3 border border-primary rounded bg-dark">
+                                <h6 class="text-primary fw-bold mb-3"><i class="fa-solid fa-rocket"></i> V8 Advanced Features</h6>
+                                
+                                <button type="button" class="btn btn-sm btn-outline-info w-100 mb-2" id="rnaStructBtn">
+                                    <i class="fa-solid fa-spiral"></i> RNA Structure (NEW)
+                                </button>
+                                
+                                <button type="button" class="btn btn-sm btn-outline-primary w-100 mb-2" id="rnaAccessBtn">
+                                    <i class="fa-solid fa-dna"></i> RNA Accessibility
+                                </button>
+                                
+                                <button type="button" class="btn btn-sm btn-outline-success w-100 mb-2" id="tissueFilterBtn">
+                                    <i class="fa-solid fa-lungs"></i> Tissue Off-Target
+                                </button>
+                                
+                                <button type="button" class="btn btn-sm btn-outline-danger w-100" id="aiChemBtn">
+                                    <i class="fa-solid fa-brain"></i> AI Chemical Optimize
+                                </button>
+                                
+                                <button type="button" class="btn btn-sm btn-outline-warning w-100 mt-2" id="pdbGenBtn">
+                                    <i class="fa-solid fa-cube"></i> PDB Structure (NEW)
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Dashboard Panel -->
+            <div class="col-lg-9">
+                <!-- KPI Row -->
+                <div class="row g-4 mb-4" id="kpi-panel">
+                    <div class="col-md-3">
+                        <div class="card kpi-card bg-glass border-secondary shadow">
+                            <div class="card-body">
+                                <h6 class="text-secondary text-uppercase fw-bold small">Candidates Scanned</h6>
+                                <h2 class="text-info font-monospace mb-0" id="kpi-scanned">0</h2>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card kpi-card bg-glass border-secondary shadow">
+                            <div class="card-body">
+                                <h6 class="text-secondary text-uppercase fw-bold small">High Efficacy (>90%)</h6>
+                                <h2 class="text-success font-monospace mb-0" id="kpi-higheff">0</h2>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card kpi-card bg-glass border-secondary shadow">
+                            <div class="card-body">
+                                <h6 class="text-secondary text-uppercase fw-bold small">Avg Efficacy Score</h6>
+                                <h2 class="text-warning font-monospace mb-0" id="kpi-avg">0.0%</h2>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card kpi-card bg-glass border-secondary shadow">
+                            <div class="card-body">
+                                <h6 class="text-secondary text-uppercase fw-bold small">Rejection Rate</h6>
+                                <h2 class="text-danger font-monospace mb-0" id="kpi-reject">0%</h2>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cocktail Results Panel (hidden by default) -->
+                <div class="card bg-glass border-warning shadow-lg mb-4 d-none" id="cocktailPanel">
+                    <div class="card-header border-warning bg-transparent py-3">
+                        <h5 class="card-title fw-bold mb-0 text-warning"><i class="fa-solid fa-vials"></i> Multi-Target Cocktail Design</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3 mb-3" id="cocktailKpis"></div>
+                        <div class="table-responsive">
+                            <table class="table table-dark table-hover mb-0">
+                                <thead class="text-secondary font-monospace small">
+                                    <tr>
+                                        <th>Target</th>
+                                        <th>Position</th>
+                                        <th>Sequence</th>
+                                        <th>Efficacy</th>
+                                        <th>Safety</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="cocktailTableBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Results Table -->
+                <div class="card bg-glass border-secondary shadow-lg">
+                    <div class="card-header border-secondary bg-transparent py-3 d-flex justify-content-between align-items-center">
+                        <h5 class="card-title fw-bold mb-0"><i class="fa-solid fa-list-check text-success"></i> Top Candidates</h5>
+                        <button class="btn btn-sm btn-outline-info" id="exportBtn"><i class="fa-solid fa-download"></i> Export CSV</button>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-dark table-hover mb-0" id="resultsTable">
+                                <thead class="table-dark text-secondary font-monospace small">
+                                <tr>
+                                    <th class="ps-4">Rank</th>
+                                    <th>Target Start</th>
+                                    <th>Sequence (5' &rarr; 3')</th>
+                                    <th>GC%</th>
+                                    <th>AI Score</th>
+                                    <th>Safety</th>
+                                    <th>Essentiality</th>
+                                    <th>Composite</th>
+                                    <th class="text-end pe-4">Cert</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td colspan="9" class="text-center py-5 text-secondary">
+                                            <i class="fa-solid fa-bed fs-1 mb-3 opacity-25"></i>
+                                            <p>Awaiting Sequence Data...</p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Certificate Modal -->
+    <div class="modal fade" id="certModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content bg-white text-dark shadow-lg border-0" style="font-family: 'Inter', sans-serif;">
+                
+                <div class="modal-body p-0">
+                    <!-- Print area container -->
+                    <div id="printableCertificate" class="p-5 position-relative">
+                        
+                        <!-- Floating Close Button -->
+                        <button type="button" class="btn-close position-absolute top-0 end-0 mt-4 me-4" data-bs-dismiss="modal" aria-label="Close"></button>
+
+                        <!-- Dynamic Stamp -->
+                        <div id="certStamp" class="position-absolute end-0 top-0 mt-5 me-5 rounded-circle border border-2 border-success d-flex align-items-center justify-content-center flex-column text-success" style="width: 100px; height: 100px; transform: rotate(15deg); border-width: 3px !important;">
+                            <span class="fw-bold" style="font-size: 0.7rem; letter-spacing: 1px;">VERIFIED</span>
+                            <i class="fa-solid fa-check fs-4"></i>
+                            <span class="fw-bold" style="font-size: 0.7rem; letter-spacing: 1px;">SAFE</span>
+                        </div>
+
+                        <!-- Header -->
+                        <div class="text-center mb-4 pe-5">
+                            <div class="d-flex justify-content-center align-items-center gap-3 mb-3">
+                                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                    <i class="fa-solid fa-dna fs-5"></i>
+                                </div>
+                                <h3 class="fw-bold text-primary mb-0" style="letter-spacing: 2px;">HELIX-ZERO V8</h3>
+                            </div>
+                            <h2 class="fw-bold text-dark mb-1">Certificate of Biological Safety</h2>
+                            <span class="text-secondary small">DeepTech Bio-Security Division • Computational Genomics Laboratory</span>
+                        </div>
+                        
+                        <hr class="border-secondary opacity-25 mb-4">
+
+                        <!-- Info Box -->
+                        <div class="bg-light border rounded-3 p-3 mb-5 d-flex justify-content-between text-center">
+                            <div>
+                                <span class="d-block text-secondary small fw-bold" style="letter-spacing: 1px;">CERTIFICATE ID</span>
+                                <span class="fw-bold text-dark font-monospace" id="certHash">N/A</span>
+                            </div>
+                            <div>
+                                <span class="d-block text-secondary small fw-bold" style="letter-spacing: 1px;">ISSUE DATE</span>
+                                <span class="fw-bold text-dark font-monospace" id="certDate">N/A</span>
+                            </div>
+                            <div>
+                                <span class="d-block text-secondary small fw-bold" style="letter-spacing: 1px;">VALID UNTIL</span>
+                                <span class="fw-bold text-dark font-monospace" id="certValid">N/A</span>
+                            </div>
+                            <div>
+                                <span class="d-block text-secondary small fw-bold" style="letter-spacing: 1px;">STATUS</span>
+                                <span class="badge bg-success rounded-pill px-3 py-1" id="certStatusBadge" style="font-size: 0.85rem;">CLEARED</span>
+                            </div>
+                        </div>
+
+                        <!-- 1. Molecular Specification -->
+                        <div class="mb-4">
+                            <h6 class="fw-bold text-primary d-flex align-items-center gap-2 border-bottom pb-2 mb-3">
+                                <span class="bg-primary text-white rounded-circle d-inline-flex justify-content-center align-items-center" style="width: 24px; height: 24px; font-size: 0.8rem;">1</span>
+                                MOLECULAR SPECIFICATION
+                            </h6>
+                            <div class="ps-2">
+                                <div class="mb-2 d-flex align-items-center gap-2">
+                                    <span class="text-dark">Candidate Sequence (5' &rarr; 3'):</span>
+                                    <span class="bg-primary bg-opacity-10 text-primary font-monospace px-3 py-1 rounded fw-bold" id="certSeq">N/A</span>
+                                </div>
+                                <div class="mb-2 text-dark">Predicted Silencing Efficiency: <strong id="certEff">N/A</strong> <span class="text-secondary small">(ML Model v1.0)</span></div>
+                                <div class="mb-2 text-dark">Genomic Position: CDS Nucleotide Position <strong id="certPos">N/A</strong></div>
+                                <div class="mb-2 text-dark">GC Content: <strong id="certGC">N/A</strong> <span class="text-secondary small">(Optimal: 30-52%)</span></div>
+                                <div class="mb-2 text-dark">Minimum Free Energy (MFE): <strong id="certMFE">N/A</strong> <span class="text-secondary small">kcal/mol</span></div>
+                                <div class="text-dark">Strand Asymmetry: <strong id="certAsymmetry">N/A</strong> <span class="text-secondary small" id="certEndStability"></span></div>
+                            </div>
+                        </div>
+
+                        <!-- 2. Homology Exclusion Analysis -->
+                        <div class="mb-5">
+                            <h6 class="fw-bold text-primary d-flex align-items-center gap-2 border-bottom pb-2 mb-3">
+                                <span class="bg-primary text-white rounded-circle d-inline-flex justify-content-center align-items-center" style="width: 24px; height: 24px; font-size: 0.8rem;">2</span>
+                                HOMOLOGY EXCLUSION ANALYSIS
+                            </h6>
+                            <p class="small text-secondary mb-3">
+                                This certificate confirms that the candidate siRNA sequence has been validated through the <strong>Helix-Zero 15-mer Exclusion Protocol</strong>. The proprietary O(1) Hash-Map Indexing algorithm cross-referenced the candidate against the complete non-target organism transcriptome.
+                            </p>
+                            <table class="table table-bordered table-sm text-dark align-middle">
+                                <thead class="table-light text-secondary small">
+                                    <tr>
+                                        <th class="fw-normal">Parameter</th>
+                                        <th class="fw-normal text-center">Observed</th>
+                                        <th class="fw-normal text-center">Threshold</th>
+                                        <th class="fw-normal text-center">Result</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Maximum Contiguous Homology</td>
+                                        <td class="text-center fw-bold"><span id="certHomology"></span> bp</td>
+                                        <td class="text-center text-secondary">&lt; 15 bp</td>
+                                        <td class="text-center" id="certStatusExclusion"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Safety Margin</td>
+                                        <td class="text-center fw-bold"><span id="certMargin"></span> bp</td>
+                                        <td class="text-center text-secondary">&gt; 0 bp</td>
+                                        <td class="text-center" id="certStatusMargin"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- 3. 9-Layer Multi-Layer Safety Analysis -->
+                        <div>
+                            <h6 class="fw-bold text-primary d-flex align-items-center gap-2 border-bottom pb-2 mb-3">
+                                <span class="bg-primary text-white rounded-circle d-inline-flex justify-content-center align-items-center" style="width: 24px; height: 24px; font-size: 0.8rem;">3</span>
+                                9-LAYER SAFETY ANALYSIS
+                            </h6>
+                            <div class="mb-3">
+                                <span class="fw-bold text-dark fs-6 d-inline-block me-2">Overall Pollinator Safety Score:</span>
+                                <span class="fw-bold fs-5" id="certScore" style="color: #00b341;">100.0%</span>
+                            </div>
+                            <div class="progress mb-4" style="height: 10px;" id="certProgressBar">
+                                <div class="progress-bar bg-success" role="progressbar" style="width: 100%;"></div>
+                            </div>
+
+                            <table class="table table-bordered table-sm text-dark align-middle" style="font-size: 0.85rem;">
+                                <thead class="table-light text-secondary">
+                                    <tr><th class="fw-normal">Safety Layer</th><th class="fw-normal text-center" style="width:120px;">Status</th><th class="fw-normal">Details</th></tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td>L1: 15-mer Exclusion Firewall</td><td class="text-center" id="certL1Badge"></td><td id="certL1Details"></td></tr>
+                                    <tr><td>L2: Full 21-nt Identity Screen</td><td class="text-center" id="certL2Badge"></td><td id="certL2Details"></td></tr>
+                                    <tr><td>L3: Seed Region (Pos 2-8)</td><td class="text-center" id="certL3Badge"></td><td id="certL3Details"></td></tr>
+                                    <tr><td>L4: Palindrome / Hairpin</td><td class="text-center" id="certL4Badge"></td><td id="certL4Details"></td></tr>
+                                    <tr><td>L5: CpG Immunogenicity</td><td class="text-center" id="certL5Badge"></td><td id="certL5Details"></td></tr>
+                                    <tr><td>L6: Poly-run Synthesis Risk</td><td class="text-center" id="certL6Badge"></td><td id="certL6Details"></td></tr>
+                                    <tr><td>L7: Extended Immune Motifs</td><td class="text-center" id="certL7Badge"></td><td id="certL7Details"></td></tr>
+                                    <tr><td>L8: Sequence Entropy/Complexity</td><td class="text-center" id="certL8Badge"></td><td id="certL8Details"></td></tr>
+                                    <tr><td>L9: AT-Dinucleotide Repeats</td><td class="text-center" id="certL9Badge"></td><td id="certL9Details"></td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- 4. Chemical Modification Analysis -->
+                        <div class="mt-4" id="certChemSection" style="display: none;">
+                            <h6 class="fw-bold text-primary d-flex align-items-center gap-2 border-bottom pb-2 mb-3">
+                                <span class="bg-primary text-white rounded-circle d-inline-flex justify-content-center align-items-center" style="width: 24px; height: 24px; font-size: 0.8rem;">4</span>
+                                CHEMICAL MODIFICATION ANALYSIS
+                            </h6>
+                            <div class="row g-3 mb-3">
+                                <div class="col-4 text-center">
+                                    <div class="bg-light rounded p-3">
+                                        <div class="text-secondary small fw-bold">STABILITY HALF-LIFE</div>
+                                        <div class="fw-bold fs-5 text-dark" id="certHalfLife">—</div>
+                                    </div>
+                                </div>
+                                <div class="col-4 text-center">
+                                    <div class="bg-light rounded p-3">
+                                        <div class="text-secondary small fw-bold">AGO2 AFFINITY</div>
+                                        <div class="fw-bold fs-5 text-dark" id="certAgo2">—</div>
+                                    </div>
+                                </div>
+                                <div class="col-4 text-center">
+                                    <div class="bg-light rounded p-3">
+                                        <div class="text-secondary small fw-bold">THERAPEUTIC INDEX</div>
+                                        <div class="fw-bold fs-5 text-dark" id="certTherapeutic">—</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="small text-secondary" id="certChemWarnings"></div>
+                        </div>
+
+                        <!-- 5. Essentiality Analysis -->
+                        <div class="mt-4" id="certEssentialSection" style="display: none;">
+                            <h6 class="fw-bold text-primary d-flex align-items-center gap-2 border-bottom pb-2 mb-3">
+                                <span class="bg-primary text-white rounded-circle d-inline-flex justify-content-center align-items-center" style="width: 24px; height: 24px; font-size: 0.8rem;">5</span>
+                                TARGET ESSENTIALITY ANALYSIS
+                            </h6>
+                            <div class="row g-3 mb-3">
+                                <div class="col-3 text-center">
+                                    <div class="bg-light rounded p-3">
+                                        <div class="text-secondary small fw-bold">GENE</div>
+                                        <div class="fw-bold fs-6 text-dark" id="certGeneName">—</div>
+                                    </div>
+                                </div>
+                                <div class="col-3 text-center">
+                                    <div class="bg-light rounded p-3">
+                                        <div class="text-secondary small fw-bold">ESSENTIALITY</div>
+                                        <div class="fw-bold fs-5 text-dark" id="certEssenScore">—</div>
+                                    </div>
+                                </div>
+                                <div class="col-3 text-center">
+                                    <div class="bg-light rounded p-3">
+                                        <div class="text-secondary small fw-bold">CLASS</div>
+                                        <div class="fw-bold fs-6 text-dark" id="certEssenClass">—</div>
+                                    </div>
+                                </div>
+                                <div class="col-3 text-center">
+                                    <div class="bg-light rounded p-3">
+                                        <div class="text-secondary small fw-bold">PRIORITY</div>
+                                        <div class="fw-bold fs-6" id="certEssenPriority">—</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <h6 class="text-dark fw-bold small">Scoring Breakdown</h6>
+                                <table class="table table-sm table-bordered text-dark" style="font-size: 0.82rem;">
+                                    <tr><td>DEG Database Match</td><td class="text-end fw-bold" id="certEssenDEG">0</td></tr>
+                                    <tr><td>OGEE Conservation</td><td class="text-end fw-bold" id="certEssenOGEE">0</td></tr>
+                                    <tr><td>RNAi Phenotype</td><td class="text-end fw-bold" id="certEssenRNAI">0</td></tr>
+                                    <tr><td>Conservation Bonus</td><td class="text-end fw-bold" id="certEssenCons">0</td></tr>
+                                </table>
+                            </div>
+                            <div class="small text-secondary" id="certEssenEvidence"></div>
+                        </div>
+
+                        <!-- Agentic RAG Analysis Box -->
+                        <div class="mt-5 p-4 border rounded bg-light">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h6 class="fw-bold text-primary mb-0"><i class="fa-solid fa-robot"></i> Agentic AI Narrative Analysis</h6>
+                                <button class="btn btn-sm btn-outline-primary" id="askRagBtn">Synthesize Report <i class="fa-solid fa-wand-magic-sparkles"></i></button>
+                            </div>
+                            <div id="ragOutput" class="text-dark font-monospace small" style="white-space: pre-wrap; display: none; line-height: 1.6;"></div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <style>
+                    @media print {
+                        body * { visibility: hidden; }
+                        #printableCertificate, #printableCertificate * { visibility: visible; }
+                        #printableCertificate { position: absolute; left: 0; top: 0; width: 100%; border: none !important; box-shadow: none !important; }
+                        #askRagBtn { display: none !important; }
+                    }
+                </style>
+
+                <div class="modal-footer bg-light border-top pt-3 d-flex justify-content-between">
+                    <button type="button" class="btn btn-dark fw-bold btn-sm" id="saveSqlBtn"><i class="fa-solid fa-database text-success"></i> Save to SQL Archive</button>
+                    <div>
+                        <button type="button" class="btn btn-outline-secondary fw-bold btn-sm me-2" data-bs-dismiss="modal">Close Window</button>
+                        <button type="button" class="btn btn-primary fw-bold btn-sm" onclick="window.print()"><i class="fa-solid fa-print"></i> Print Certificate</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SQL History Modal -->
+    <div class="modal fade" id="historyModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content bg-dark text-light shadow-lg border-secondary rounded-3">
+                <div class="modal-header border-secondary custom-glow-header pb-4">
+                    <h5 class="modal-title fw-bold text-info"><i class="fa-solid fa-server"></i> Helix-Zero Enterprise Data Warehouse</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-dark table-striped table-hover mb-0" id="historyTable">
+                            <thead class="text-secondary font-monospace small">
+                                <tr>
+                                    <th class="ps-4">Audit ID</th>
+                                    <th>Candidate Sequence</th>
+                                    <th>Efficacy</th>
+                                    <th>Safety Score</th>
+                                    <th>Risk Warnings</th>
+                                    <th>Timestamp</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- SQL Logs Injected via jQuery -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer border-secondary">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- RNA Accessibility Modal -->
+    <div class="modal fade" id="rnaAccessModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content bg-dark text-light border-primary">
+                <div class="modal-header border-primary bg-primary bg-opacity-25">
+                    <h5 class="modal-title fw-bold text-primary"><i class="fa-solid fa-dna"></i> RNA Target Accessibility Analysis</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-info">
+                        <i class="fa-solid fa-info-circle"></i> <strong>Thermodynamic Accessibility:</strong> Analyzes free energy of siRNA:mRNA binding and target site unfolding.
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-info">Sequence</label>
+                        <input type="text" class="form-control bg-dark text-light font-monospace" id="rnaSeqInput" placeholder="ATGGACTACAAGGACGACGA">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-info">Target Context (optional)</label>
+                        <input type="text" class="form-control bg-dark text-light font-monospace" id="rnaContextInput" placeholder="Flanking mRNA sequence...">
+                    </div>
+                    <button type="button" class="btn btn-primary w-100" id="runRnaAccessBtn">
+                        <i class="fa-solid fa-calculator"></i> Calculate Accessibility
+                    </button>
+                    <div id="rnaAccessResults" class="mt-4"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- RNA Structure Visualization Modal (NEW!) -->
+    <div class="modal fade" id="rnaStructureModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-centered">
+            <div class="modal-content bg-dark text-light border-info">
+                <div class="modal-header border-info bg-info bg-opacity-25">
+                    <h5 class="modal-title fw-bold text-info"><i class="fa-solid fa-spiral"></i> RNA Structure Prediction (CMS Integrated)</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-info">
+                        <i class="fa-solid fa-spiral"></i> <strong>CMS Structure Predictor:</strong> Uses Helix_Zero1 CMS model outputs for RNA folding inference and accessibility-ready structure scoring.
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-info">Target RNA Sequence</label>
+                        <input type="text" class="form-control bg-dark text-light font-monospace" id="rnaStructSeqInput" placeholder="ATGGACTACAAGGACGACGA">
+                    </div>
+                    <button type="button" class="btn btn-info w-100 mb-3" id="runRnaStructBtn">
+                        <i class="fa-solid fa-spiral"></i> Predict via CMS
+                    </button>
+                    <div id="rnaStructResults" class="mt-3"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tissue Filter Modal -->
+    <div class="modal fade" id="tissueFilterModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content bg-dark text-light border-success">
+                <div class="modal-header border-success bg-success bg-opacity-25">
+                    <h5 class="modal-title fw-bold text-success"><i class="fa-solid fa-lungs"></i> Tissue-Specific Off-Target Filter</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-success">
+                        <i class="fa-solid fa-shield-check"></i> <strong>Tissue Transcriptomics:</strong> If an off-target gene is only expressed in the heart, but we deliver to the liver, the risk is effectively zero.
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label text-success">Sequence</label>
+                            <input type="text" class="form-control bg-dark text-light font-monospace" id="tissueSeqInput" placeholder="ATGGACTACAAGGACGACGA">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label text-success">Delivery Tissue</label>
+                            <select class="form-select bg-dark text-light" id="tissueTypeSelect">
+                                <option value="liver">Liver (Primary RNAi target)</option>
+                                <option value="lung">Lung</option>
+                                <option value="heart">Heart</option>
+                                <option value="kidney">Kidney</option>
+                                <option value="brain">Brain</option>
+                                <option value="muscle">Muscle</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-success">Off-Target Genes (comma-separated)</label>
+                        <input type="text" class="form-control bg-dark text-light" id="tissueGenesInput" placeholder="CYP3A4, ALB, MBP">
+                    </div>
+                    <button type="button" class="btn btn-success w-100" id="runTissueFilterBtn">
+                        <i class="fa-solid fa-filter"></i> Filter Off-Targets
+                    </button>
+                    <div id="tissueFilterResults" class="mt-4"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Chem Optimization Modal -->
+    <div class="modal fade" id="aiChemModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-centered">
+            <div class="modal-content bg-dark text-light border-danger">
+                <div class="modal-header border-danger bg-danger bg-opacity-25">
+                    <h5 class="modal-title fw-bold text-danger"><i class="fa-solid fa-brain"></i> AI Chemical Optimization (CMS Integrated)</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-danger">
+                        <i class="fa-solid fa-robot"></i> <strong>CMS Optimizer:</strong> Uses Helix_Zero1 CMS optimization pipeline to propose higher therapeutic-index chemical strategies with model-driven scoring.
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-danger">RNA Sequence</label>
+                        <input type="text" class="form-control bg-dark text-light font-monospace" id="aiChemSeqInput" placeholder="ATGGACTACAAGGACGACGA" maxlength="25">
+                        <small class="text-secondary">Enter a 21nt siRNA sequence</small>
+                    </div>
+                    <button type="button" class="btn btn-danger w-100" id="runAiChemBtn">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i> Run CMS Optimization
+                    </button>
+                    <div id="aiChemResults" class="mt-4"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PDB Structure Visualization Modal -->
+    <div class="modal fade" id="pdbModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-centered">
+            <div class="modal-content bg-dark text-light border-warning">
+                <div class="modal-header border-warning bg-warning bg-opacity-25">
+                    <h5 class="modal-title fw-bold text-warning"><i class="fa-solid fa-cube"></i> PDB Structure Visualization</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-warning">
+                        <i class="fa-solid fa-3d-viewer"></i> <strong>PDB Generation:</strong> Generate 3D structure files for RNA/siRNA visualization. Download PDB files to view in PyMOL, VMD, or Chimera.
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-8">
+                            <label class="form-label text-warning">RNA Sequence</label>
+                            <input type="text" class="form-control bg-dark text-light font-monospace" id="pdbSeqInput" placeholder="ATGGACTACAAGGACGACGA" maxlength="25">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label text-warning">Modification Type</label>
+                            <select class="form-select bg-dark text-light" id="pdbModSelect">
+                                <option value="native">Native (Unmodified)</option>
+                                <option value="2_ome">2'-O-Methyl (2'-OMe)</option>
+                                <option value="2_f">2'-Fluoro (2'-F)</option>
+                                <option value="ps">Phosphorothioate (PS)</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label text-warning">Modify Positions (comma-separated, e.g., 0,2,4,17)</label>
+                        <input type="text" class="form-control bg-dark text-light" id="pdbModPositions" placeholder="0,2,4,17,18">
+                        <small class="text-secondary">Leave empty to use AI-optimized positions</small>
+                    </div>
+                    
+                    <div class="d-grid gap-2 d-md-block mb-3">
+                        <button type="button" class="btn btn-warning" id="runPdbGenBtn">
+                            <i class="fa-solid fa-cube"></i> Generate PDB Files
+                        </button>
+                        <button type="button" class="btn btn-outline-warning" id="downloadNativePdb">
+                            <i class="fa-solid fa-download"></i> Download Native
+                        </button>
+                        <button type="button" class="btn btn-outline-warning" id="downloadModifiedPdb">
+                            <i class="fa-solid fa-download"></i> Download Modified
+                        </button>
+                    </div>
+                    
+                    <div id="pdbResults" class="mt-3">
+                        <div class="card bg-dark border-secondary">
+                            <div class="card-header">
+                                <h6 class="text-info mb-0"><i class="fa-solid fa-code"></i> PDB Content Preview</h6>
+                            </div>
+                            <div class="card-body">
+                                <pre class="text-light font-monospace small" id="pdbContentPreview" style="max-height: 300px; overflow-y: auto;">PDB content will appear here after generation...</pre>
+                            </div>
+                        </div>
+                        
+                        <div class="alert alert-info mt-3">
+                            <i class="fa-solid fa-info-circle"></i> <strong>Visualization Instructions:</strong>
+                            <ol class="mb-0 mt-2">
+                                <li>Download the PDB file</li>
+                                <li>Open in PyMOL, VMD, or Chimera</li>
+                                <li>Use <code>show cartoon</code> in PyMOL for A-form helix</li>
+                                <li>Color modifications: Blue=2'-OMe, Orange=2'-F, Purple=PS</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

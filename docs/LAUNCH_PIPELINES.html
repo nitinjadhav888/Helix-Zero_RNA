@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Helix-Zero Pipeline Launcher</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            padding: 50px;
+            border-radius: 24px;
+            box-shadow: 0 25px 80px rgba(0,0,0,0.3);
+            max-width: 700px;
+            width: 100%;
+        }
+        
+        h1 {
+            color: #1a202c;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 32px;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #718096;
+            margin-bottom: 40px;
+            font-size: 16px;
+        }
+        
+        .pipeline-card {
+            display: block;
+            width: 100%;
+            padding: 30px;
+            margin: 20px 0;
+            border: 2px solid transparent;
+            border-radius: 16px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .pipeline-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+        }
+        
+        .classic-pipeline {
+            background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%);
+            color: white;
+        }
+        
+        .advanced-pipeline {
+            background: linear-gradient(135deg, #a855f7 0%, #ec4899 100%);
+            color: white;
+        }
+        
+        .pipeline-icon {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+        
+        .pipeline-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+        
+        .pipeline-desc {
+            font-size: 14px;
+            opacity: 0.9;
+            line-height: 1.6;
+        }
+        
+        .features {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255,255,255,0.2);
+            font-size: 12px;
+        }
+        
+        .feature-tag {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            padding: 4px 10px;
+            border-radius: 12px;
+            margin: 4px 6px 4px 0;
+        }
+        
+        .divider {
+            text-align: center;
+            margin: 30px 0;
+            color: #a0aec0;
+            font-size: 14px;
+        }
+        
+        .info-box {
+            background: #f7fafc;
+            border-left: 4px solid #4299e1;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 30px;
+        }
+        
+        .info-box h3 {
+            color: #2d3748;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+        
+        .info-box p {
+            color: #4a5568;
+            font-size: 14px;
+            line-height: 1.7;
+        }
+        
+        .arrow {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 32px;
+            opacity: 0.7;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧬 Helix-Zero Platform</h1>
+        <p class="subtitle">Select your RNAi design pipeline</p>
+        
+        <!-- Classic Pipeline -->
+        <a href="http://localhost:5173/" class="pipeline-card classic-pipeline">
+            <div class="pipeline-icon">🧬</div>
+            <div class="pipeline-title">Classic Pipeline (v6.x)</div>
+            <div class="pipeline-desc">Safety screening with non-target species panel analysis</div>
+            
+            <div class="features">
+                <span class="feature-tag">✓ Fast Screening</span>
+                <span class="feature-tag">✓ Safety Analysis</span>
+                <span class="feature-tag">✓ Certificate Generation</span>
+                <span class="feature-tag">✓ Regulatory Compliance</span>
+            </div>
+            
+            <span class="arrow">→</span>
+        </a>
+        
+        <div class="divider">⚡ OR ⚡</div>
+        
+        <!-- Advanced Pipeline -->
+        <a href="http://localhost:5173/v7" class="pipeline-card advanced-pipeline">
+            <div class="pipeline-icon">🔬</div>
+            <div class="pipeline-title">Advanced Pipeline (v7.0)</div>
+            <div class="pipeline-desc">Genome-guided essential gene targeting with multi-omics integration</div>
+            
+            <div class="features">
+                <span class="feature-tag">✓ Genome Upload</span>
+                <span class="feature-tag">✓ Essential Genes</span>
+                <span class="feature-tag">✓ Multi-Omics Data</span>
+                <span class="feature-tag">✓ Interactive Browser</span>
+            </div>
+            
+            <span class="arrow">→</span>
+        </a>
+        
+        <!-- Info Box -->
+        <div class="info-box">
+            <h3>💡 How to Use</h3>
+            <p>
+                Click on either pipeline card above to launch that specific workflow. 
+                Both pipelines run on the same server but serve different purposes:
+            </p>
+            <ul style="margin-top: 10px; padding-left: 20px; color: #4a5568;">
+                <li><strong>Classic (v6.x):</strong> Best for routine safety screening</li>
+                <li><strong>Advanced (v7.0):</strong> Best for discovery research</li>
+            </ul>
+            <p style="margin-top: 10px; font-size: 13px; color: #718096;">
+                📝 Make sure your dev server is running (<code>npm run dev</code>) before clicking.
+            </p>
+        </div>
+    </div>
+</body>
+</html>

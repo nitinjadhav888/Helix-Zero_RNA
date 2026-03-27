@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Helix-Zero CMS</title>
+    <!-- Add CSS framework (Bootstrap/Bulma) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Forna (RNA Visualization) Dependencies - Local with CDN Fallback -->
+    <link rel="stylesheet" href="/static/css/fornac.css" onerror="this.onerror=null;this.href='https://cdn.jsdelivr.net/npm/fornac@0.2.1/dist/css/fornac.css';">
+    <script src="/static/js/jquery.min.js" onerror="this.onerror=null;this.src='https://code.jquery.com/jquery-3.6.0.min.js';"></script>
+    <script src="/static/js/d3.min.js" onerror="this.onerror=null;this.src='https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js';"></script>
+    <script src="/static/js/fornac.js" onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/npm/fornac@0.2.1/dist/scripts/fornac.js';"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <style>
+        .forna-container { background: #fff !important; }
+        /* Style adjustments to match user preference (black text, red links) */
+        .node { stroke: #333; stroke-width: 1px; fill: #fff; }
+        .node-label { fill: #000 !important; font-family: 'Times New Roman', serif; font-weight: bold; }
+        .link { stroke: #000; stroke-width: 2px; } /* Backbone */
+        .link.basepair { stroke: #ff0000 !important; stroke-width: 6px !important; opacity: 1 !important; } /* Red bars */
+    </style>
+</head>
+<body class="bg-light">
+    
+    <nav class="navbar navbar-dark bg-dark">
+        <div class="container-fluid">
+            <span class="navbar-brand mb-0 h1">Helix-Zero CMS</span>
+            <span class="text-white">siRNA Chemical Modification Stabilizer</span>
+        </div>
+    </nav>
+    
+    <div class="container mt-5">
+        <div class="row">
+            <!-- Input Form -->
+            <div class="col-md-5">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                        <h4 class="mb-0">Design Parameters</h4>
+                        <ul class="nav nav-pills card-header-pills" id="designTabs" role="tablist">
+                            <li class="nav-item">
+                                <a class="nav-link active text-white" id="manual-tab" data-bs-toggle="pill" href="#manual" role="tab">Manual</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-white opacity-75" id="auto-tab" data-bs-toggle="pill" href="#auto" role="tab">AI Auto-Optimize</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="sequence" class="form-label">siRNA Sequence (19-21 nt)</label>
+                            <input type="text" class="form-control" id="sequence" 
+                                   placeholder="e.g. AAGUAGUAAGCUAAGCUAAG" required>
+                            <div class="form-text">Enter raw nucleotide sequence (A, U, C, G)</div>
+                        </div>
+
+                        <div class="tab-content" id="designTabsContent">
+                            <!-- Manual Design Tab -->
+                            <div class="tab-pane fade show active" id="manual" role="tabpanel">
+                                <form id="predictionForm">
+                                    <div class="mb-3">
+                                        <label for="modType" class="form-label">Modification Chemistry</label>
+                                        <select class="form-select" id="modType">
+                                            <option value="2_ome">2'-O-methyl (2'-OMe)</option>
+                                            <option value="2_f">2'-Fluoro (2'-F)</option>
+                                            <option value="ps">Phosphorothioate (PS)</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label class="form-label">Modification Positions (0-indexed)</label>
+                                        <div class="d-flex gap-2 mb-2">
+                                            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="setPreset('alternating')">Alternating</button>
+                                            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="setPreset('ends')">Ends Only</button>
+                                            <button type="button" class="btn btn-sm btn-outline-danger" onclick="clearPositions()">Clear</button>
+                                        </div>
+                                        <div id="positionGrid" class="d-flex flex-wrap gap-1">
+                                            <!-- Generated by JS -->
+                                        </div>
+                                    </div>
+                                    
+                                    <button type="submit" class="btn btn-primary w-100">Run Prediction</button>
+                                </form>
+                            </div>
+                            
+                            <!-- AI Optimization Tab -->
+                            <div class="tab-pane fade" id="auto" role="tabpanel">
+                                <form id="optimizeForm">
+                                    <div class="alert alert-warning py-2 mb-3">
+                                        <small><i class="bi bi-robot"></i> Let the Deep Learning Transformer discover the optimal modification pattern for your sequence.</small>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="optimizeObjective" class="form-label">Optimization Objective</label>
+                                        <select class="form-select border-warning" id="optimizeObjective">
+                                            <option value="efficacy">Maximize Efficacy (Therapeutic Index)</option>
+                                            <option value="survivability">Maximize Survivability (Nuclease Stability)</option>
+                                            <option value="immunogenicity">Minimize Immunogenicity (Immune Stealth)</option>
+                                        </select>
+                                        <div class="form-text mt-2"><small>The AI will automatically respect Ago2 cleavage zone rules (Pos 9-12).</small></div>
+                                    </div>
+                                    <button type="submit" class="btn btn-warning w-100 fw-bold">Optimize & Predict</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Results Dashboard -->
+            <div class="col-md-7">
+                <div id="results" class="card shadow-sm d-none">
+                    <div class="card-header bg-success text-white">
+                        <h4 class="mb-0">Analysis Results</h4>
+                    </div>
+                    <div class="card-body">
+                        <!-- Score Cards -->
+                        <div class="row text-center mb-4">
+                            <div class="col-4">
+                                <div class="p-3 border rounded bg-light">
+                                    <h2 class="text-primary" id="tiScore">-</h2>
+                                    <small class="text-muted">Therapeutic Index</small>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="p-3 border rounded bg-light">
+                                    <h2 class="text-info" id="stabilityScore">-</h2>
+                                    <small class="text-muted">Stability Score</small>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="p-3 border rounded bg-light">
+                                    <h2 class="text-success" id="activityScore">-</h2>
+                                    <small class="text-muted">Activity Score</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Detailed Metrics -->
+                        <h5 class="border-bottom pb-2">Biological Performance</h5>
+                        <div class="row g-3 mb-4">
+                            <div class="col-6">
+                                <label class="fw-bold">Estimated Half-Life:</label>
+                                <div class="progress" role="progressbar">
+                                    <div class="progress-bar bg-info" id="halfLifeBar" style="width: 0%"></div>
+                                </div>
+                                <small id="halfLifeVal" class="text-muted">0 hr</small>
+                            </div>
+                            <div class="col-6">
+                                <label class="fw-bold">Ago2 Binding:</label>
+                                <div class="progress" role="progressbar">
+                                    <div class="progress-bar bg-success" id="ago2Bar" style="width: 0%"></div>
+                                </div>
+                                <small id="ago2Val" class="text-muted">0%</small>
+                            </div>
+                            <div class="col-6">
+                                <label class="fw-bold">Immune Stealth:</label>
+                                <div class="progress" role="progressbar">
+                                    <div class="progress-bar bg-warning" id="immuneBar" style="width: 0%"></div>
+                                </div>
+                                <small id="immuneVal" class="text-muted">0% suppression</small>
+                            </div>
+                            <div class="col-6">
+                                <label class="fw-bold">Cleavage Zone Violations:</label>
+                                <span id="cleavageViolations" class="badge bg-danger">0</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Recommendation -->
+                        <div class="alert alert-info" role="alert">
+                            <strong>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-info-circle-fill me-1 mb-1" viewBox="0 0 16 16">
+                                    <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"/>
+                                </svg>
+                                Recommendation:
+                            </strong> 
+                            <span id="recommendationText">Unknown</span>
+                        </div>
+                        
+                        <!-- Sequence Map -->
+                        <h5 class="border-bottom pb-2 mt-4">Sequence Map (Modified Positions Highlighted)</h5>
+                        <div id="sequenceMap" class="p-3 bg-white border rounded text-break font-monospace fs-5 text-center">
+                            <!-- Visualized sequence -->
+                        </div>
+                        <div class="mt-2 text-center" id="modifiedPositionsText"></div>
+
+                        <!-- Structure Analysis -->
+                        <h5 class="border-bottom pb-2 mt-4">Secondary Structure 2D Visualization</h5>
+                        <div class="row">
+                            <div class="col-md-6 text-center">
+                                <h6>Native (Unmodified)</h6>
+                                <div id="nativeStructureViz" style="height: 300px; width: 100%; border: 1px solid #eee;"></div>
+                                <div class="mt-2 text-muted small" id="nativeDotBracket"></div>
+                            </div>
+                            <div class="col-md-6 text-center">
+                                <h6>Modified (Predicted)</h6>
+                                <div id="modStructureViz" style="height: 300px; width: 100%; border: 1px solid #eee;"></div>
+                                <div class="mt-2 text-muted small" id="modDotBracket"></div>
+                                <div id="modMFE" class="text-muted mt-1 small"></div>
+                            </div>
+                        </div>
+                        <div class="alert alert-light border mt-2 small">
+                            <strong>Visualization:</strong> Red bars indicate base pairs (H-bonds). 
+                            See <a href="http://rna.tbi.univie.ac.at/forna/" target="_blank">Forna</a> documentation.
+                        </div>
+
+                    </div>
+                </div>
+                
+                <!-- Empty State -->
+                <div id="placeholder" class="card shadow-sm p-5 text-center text-muted">
+                    <h3>Ready to Analyze</h3>
+                    <p>Enter sequence parameters to generate prediction profile.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Tab switching opacity handling
+        document.querySelectorAll('a[data-bs-toggle="pill"]').forEach(tab => {
+            tab.addEventListener('shown.bs.tab', function(e) {
+                document.querySelectorAll('a[data-bs-toggle="pill"]').forEach(t => t.classList.add('opacity-75'));
+                e.target.classList.remove('opacity-75');
+            });
+        });
+
+        // Init grid
+        const grid = document.getElementById('positionGrid');
+        for (let i = 0; i < 21; i++) {
+            const check = document.createElement('div');
+            check.className = 'form-check form-check-inline m-1 p-0';
+            check.innerHTML = `
+                <input type="checkbox" class="btn-check position-check" id="pos${i}" value="${i}" autocomplete="off">
+                <label class="btn btn-outline-secondary btn-sm" for="pos${i}">${i+1}</label>
+            `;
+            grid.appendChild(check);
+        }
+        
+        function clearPositions() {
+            document.querySelectorAll('.position-check').forEach(c => c.checked = false);
+        }
+        
+        function setPreset(type) {
+            clearPositions();
+            const checks = document.querySelectorAll('.position-check');
+            if (type === 'alternating') {
+                checks.forEach((c, i) => { if (i % 2 !== 0) c.checked = true; });
+            } else if (type === 'ends') {
+                [0, 1, 19, 20].forEach(i => {
+                    const el = document.getElementById('pos' + i);
+                    if (el) el.checked = true;
+                });
+            }
+        }
+        
+        document.getElementById('predictionForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const sequence = document.getElementById('sequence').value;
+            const modType = document.getElementById('modType').value;
+            const positions = Array.from(document.querySelectorAll('.position-check:checked')).map(c => parseInt(c.value));
+            
+            // UI Transition
+            const btn = e.target.querySelector('button[type="submit"]');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = 'Computing...';
+            btn.disabled = true;
+            
+            try {
+                const response = await axios.post('/predict', {
+                    sequence,
+                    modification_type: modType,
+                    positions
+                });
+                
+                const data = response.data.result;
+                renderResults(data);
+                
+                document.getElementById('placeholder').classList.add('d-none');
+                document.getElementById('results').classList.remove('d-none');
+                
+            } catch (err) {
+                alert(err.response?.data?.error || 'Prediction failed');
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        });
+        
+        document.getElementById('optimizeForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const sequence = document.getElementById('sequence').value;
+            const objective = document.getElementById('optimizeObjective').value;
+            
+            const btn = e.target.querySelector('button[type="submit"]');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = 'AI Computing...';
+            btn.disabled = true;
+
+            try {
+                // 1. Ask AI Optimizer for the best configuration
+                const optRes = await axios.post('/optimize', { sequence, objective });
+                const optData = optRes.data.optimization_result;
+                
+                // 2. Set the manual UI fields to reflect the AI's choice
+                let modVal = '2_ome';
+                if (optData.modification_type === 'FLUORO') modVal = '2_f';
+                if (optData.modification_type === 'PS') modVal = 'ps';
+                document.getElementById('modType').value = modVal;
+                
+                clearPositions();
+                optData.positions.forEach(pos => {
+                    const el = document.getElementById('pos' + pos);
+                    if (el) el.checked = true;
+                });
+                
+                // 3. Automatically run full Prediction pipeline using the AI's configuration
+                const predRes = await axios.post('/predict', {
+                    sequence: sequence,
+                    modification_type: modVal,
+                    positions: optData.positions
+                });
+                
+                renderResults(predRes.data.result);
+                document.getElementById('placeholder').classList.add('d-none');
+                document.getElementById('results').classList.remove('d-none');
+                
+            } catch (err) {
+                alert(err.response?.data?.error || 'Optimization failed');
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        });
+
+        function renderResults(data) {
+            // Revert back to the true physical calculations (Legacy physics engine), 
+            // since the standalone Transformer checkpoint is untrained in this environment.
+            document.getElementById('tiScore').innerText = data.therapeutic_index.toFixed(1);
+            document.getElementById('stabilityScore').innerText = data.stability_score.toFixed(1);
+            document.getElementById('activityScore').innerText = data.activity_score.toFixed(1);
+            
+            updateBar('halfLifeBar', data.half_life, 72, 'halfLifeVal', ' hr');
+            updateBar('ago2Bar', data.ago2_binding, 100, 'ago2Val', '%');
+            updateBar('immuneBar', data.immune_suppression, 100, 'immuneVal', '% suppr');
+            
+            const violEl = document.getElementById('cleavageViolations');
+            violEl.innerText = data.cleavage_violations;
+            violEl.className = data.cleavage_violations > 0 ? 'badge bg-danger' : 'badge bg-success';
+            
+            document.getElementById('recommendationText').innerText = data.recommendation;
+            
+            // Render sequence map
+            const seqEl = document.getElementById('sequenceMap');
+            seqEl.innerHTML = '';
+            
+            const seq = data.sequence.split(''); // Note: contains lower/upper case from backend
+            let modPosText = [];
+            seq.forEach((char, idx) => {
+                const s = document.createElement('span');
+                s.innerText = char.toUpperCase();
+                const isModified = (char === char.toLowerCase());
+                if (isModified) {
+                    s.className = 'badge bg-warning text-dark mx-1';
+                    modPosText.push(idx + 1); // 1-indexed for human readability
+                } else {
+                    s.className = 'badge bg-light text-dark border mx-1';
+                }
+                seqEl.appendChild(s);
+            });
+            
+            document.getElementById('modifiedPositionsText').innerHTML = 
+                modPosText.length > 0 ? `<strong>Modified Positions (1-indexed):</strong> ${modPosText.join(', ')}` : `<strong>No Modifications</strong>`;
+
+            // Render Structure Visualization (Forna)
+            try {
+                // Handle different module loading scenarios (global vs namespace)
+                if (typeof FornaContainer === 'undefined' && typeof fornac !== 'undefined' && fornac.FornaContainer) {
+                    window.FornaContainer = fornac.FornaContainer;
+                }
+
+                if (typeof FornaContainer !== 'undefined') {
+                    // Clear previous content first to avoid duplicates
+                    document.getElementById('nativeStructureViz').innerHTML = '';
+                    document.getElementById('modStructureViz').innerHTML = '';
+                    
+                    renderForna('nativeStructureViz', data.sequence.toUpperCase(), data.structure_native.structure, []);
+                    renderForna('modStructureViz', data.sequence.toUpperCase(), data.structure_modified.structure, modPosText);
+                } else {
+                    console.warn("FornaContainer not loaded");
+                    document.getElementById('nativeStructureViz').innerHTML = '<div class="alert alert-warning">Visualization library failed to load. Please refresh the page.</div>';
+                }
+            } catch (e) {
+                console.error("Visualization error:", e);
+                document.getElementById('nativeStructureViz').innerText = "Error rendering: " + e.message;
+            }
+            
+            // Text details
+            document.getElementById('nativeDotBracket').innerText = `${data.structure_native.structure} (${data.structure_native.mfe} kcal/mol)`;
+            document.getElementById('modDotBracket').innerText = `${data.structure_modified.structure}`;
+            
+            document.getElementById('modMFE').innerHTML = `
+                MFE: <strong>${data.structure_modified.mfe} kcal/mol</strong><br>
+                <span class="text-primary">(${data.structure_modified.delta_g_modification > 0 ? '+' : ''}${data.structure_modified.delta_g_modification} kcal/mol from mods)</span>
+            `;
+        }
+
+        // Initialize Forna Containers
+        let nativeContainer = null;
+        let modContainer = null;
+
+        function renderForna(containerId, sequence, structure, modPositions) {
+            const container = new FornaContainer("#" + containerId, {
+                'animation': true,
+                'zoomable': true,
+                'initialSize': [300, 300]
+            });
+            
+            // Forna expects options object
+            const options = {
+                'structure': structure,
+                'sequence': sequence
+            };
+            
+            container.addRNA(options.structure, options);
+            
+            // Highlight modifications if array is provided
+            if (modPositions && modPositions.length > 0) {
+                // Forna CSS Injection: we use container.addCustomColorsText
+                // Format: "node_index:color"
+                let colorText = "";
+                modPositions.forEach(pos => {
+                    colorText += `${pos}:#ffaa00\n`; // High-vis orange/yellow
+                });
+                try {
+                    container.addCustomColorsText(colorText);
+                } catch (e) {
+                    console.log("Could not color nodes:", e);
+                }
+            }
+            
+            return container;
+        }
+        
+        function updateBar(id, val, max, textId, suffix) {
+            const pct = Math.min((val / max) * 100, 100);
+            const bar = document.getElementById(id);
+            bar.style.width = pct + '%';
+            document.getElementById(textId).innerText = val.toFixed(1) + suffix;
+        }
+    </script>
+</body>
+</html>

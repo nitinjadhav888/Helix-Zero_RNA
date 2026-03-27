@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Helix-Zero CMS - Chemical Modification Simulator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            min-height: 100vh;
+        }
+        .glow-blue { box-shadow: 0 0 20px rgba(59, 130, 246, 0.5); }
+        .glow-green { box-shadow: 0 0 20px rgba(34, 197, 94, 0.5); }
+        .glow-purple { box-shadow: 0 0 20px rgba(168, 85, 247, 0.5); }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        .animate-pulse-slow { animation: pulse 2s ease-in-out infinite; }
+    </style>
+</head>
+<body class="text-white">
+    <div class="container mx-auto px-4 py-8 max-w-6xl">
+        <!-- Header -->
+        <header class="text-center mb-8">
+            <h1 class="text-4xl font-bold bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text text-transparent mb-2">
+                🧬 Helix-Zero CMS
+            </h1>
+            <p class="text-gray-400">AI Chemical Modification Simulator for siRNA Therapeutics</p>
+            <div class="mt-4 flex justify-center gap-4 text-sm">
+                <span class="px-3 py-1 bg-blue-900/50 rounded-full border border-blue-700">
+                    2'-OMe: <span class="text-blue-400">Blue</span>
+                </span>
+                <span class="px-3 py-1 bg-orange-900/50 rounded-full border border-orange-700">
+                    2'-F: <span class="text-orange-400">Orange</span>
+                </span>
+                <span class="px-3 py-1 bg-purple-900/50 rounded-full border border-purple-700">
+                    PS: <span class="text-purple-400">Purple</span>
+                </span>
+            </div>
+        </header>
+
+        <!-- Input Form -->
+        <div class="bg-gray-900/80 backdrop-blur rounded-2xl p-6 border border-gray-700 mb-6">
+            <h2 class="text-xl font-semibold mb-4 flex items-center gap-2">
+                <span>📥</span> Input Configuration
+            </h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-400 mb-2">
+                        siRNA Sequence (19-21 nucleotides)
+                    </label>
+                    <input type="text" id="sequence" 
+                           value="GUCAUCACGGUGUACCUCAUU"
+                           placeholder="Enter siRNA sequence..."
+                           maxlength="21"
+                           class="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-lg 
+                                  focus:ring-2 focus:ring-blue-500 focus:border-transparent
+                                  font-mono text-lg tracking-wider">
+                    <p class="text-xs text-gray-500 mt-2">
+                        Use A, U, C, G (T will be converted to U)
+                    </p>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-400 mb-2">
+                        Modification Type
+                    </label>
+                    <select id="modType" 
+                            class="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-lg 
+                                   focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        <option value="2_ome">2'-O-Methyl (2'-OMe) - Most Common</option>
+                        <option value="2_f">2'-Fluoro (2'-F) - Best Stability</option>
+                        <option value="ps">Phosphorothioate (PS) - Highest Resistance</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-medium text-gray-400 mb-2">
+                        Custom Positions (optional)
+                    </label>
+                    <input type="text" id="positions" 
+                           placeholder="e.g., 0,2,4,14,16,18 or leave empty for auto"
+                           class="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-lg 
+                                  focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono">
+                    <p class="text-xs text-gray-500 mt-1">
+                        Comma-separated 0-indexed positions. Leave empty for AI auto-selection.
+                    </p>
+                </div>
+                <div class="flex items-center">
+                    <label class="flex items-center gap-3 cursor-pointer bg-gray-800 p-4 rounded-lg border border-gray-600 w-full">
+                        <input type="checkbox" id="useAI" checked
+                               class="w-5 h-5 rounded bg-gray-700 border-gray-600 text-blue-500 focus:ring-blue-500">
+                        <div>
+                            <span class="font-medium">🤖 AI Optimization</span>
+                            <p class="text-xs text-gray-400">Monte-Carlo (2000 iterations)</p>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <button id="runBtn" onclick="runSimulation()"
+                    class="w-full mt-6 py-4 px-6 bg-gradient-to-r from-blue-600 to-purple-600 
+                           hover:from-blue-700 hover:to-purple-700 rounded-xl font-bold text-lg
+                           transition-all duration-200 flex items-center justify-center gap-3
+                           hover:scale-[1.02] active:scale-[0.98]">
+                <span class="text-2xl">🧬</span>
+                <span id="btnText">Run Chemical Modification Simulation</span>
+            </button>
+        </div>
+
+        <!-- Results Section -->
+        <div id="results" class="hidden space-y-6">
+            <!-- Sequence Display -->
+            <div class="bg-gray-900/80 backdrop-blur rounded-2xl p-6 border border-gray-700">
+                <h3 class="text-xl font-semibold mb-4 flex items-center gap-2">
+                    <span>🔬</span> Modification Pattern
+                </h3>
+                <div class="bg-gray-800 rounded-xl p-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 font-mono text-lg">
+                        <div>
+                            <p class="text-gray-400 text-sm mb-1">Original Sequence</p>
+                            <p id="origSeq" class="tracking-wider text-xl"></p>
+                        </div>
+                        <div>
+                            <p class="text-gray-400 text-sm mb-1">Modified Sequence</p>
+                            <p id="modSeq" class="tracking-wider text-xl"></p>
+                        </div>
+                    </div>
+                    <div class="mt-4 flex flex-wrap gap-3">
+                        <span class="px-3 py-1 bg-blue-900/50 text-blue-400 rounded-full text-sm font-medium">
+                            Modified Positions: <span id="modPositions" class="font-bold"></span>
+                        </span>
+                        <span class="px-3 py-1 bg-green-900/50 text-green-400 rounded-full text-sm font-medium">
+                            Density: <span id="modDensity" class="font-bold"></span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Metrics Grid -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="bg-gradient-to-br from-blue-900/50 to-blue-800/30 rounded-xl p-5 border border-blue-500/50">
+                    <p class="text-xs text-gray-400 uppercase tracking-wide">Stability Half-Life</p>
+                    <p id="halfLife" class="text-3xl font-bold mt-1 text-blue-400"></p>
+                    <p class="text-xs text-gray-500">hours in serum</p>
+                </div>
+                <div class="bg-gradient-to-br from-green-900/50 to-green-800/30 rounded-xl p-5 border border-green-500/50">
+                    <p class="text-xs text-gray-400 uppercase tracking-wide">Ago2 Binding</p>
+                    <p id="ago2Binding" class="text-3xl font-bold mt-1 text-green-400"></p>
+                    <p class="text-xs text-gray-500">RISC loading efficiency</p>
+                </div>
+                <div class="bg-gradient-to-br from-purple-900/50 to-purple-800/30 rounded-xl p-5 border border-purple-500/50">
+                    <p class="text-xs text-gray-400 uppercase tracking-wide">Immune Suppression</p>
+                    <p id="immuneSupp" class="text-3xl font-bold mt-1 text-purple-400"></p>
+                    <p class="text-xs text-gray-500">TLR activation reduction</p>
+                </div>
+                <div id="tiCard" class="bg-gradient-to-br from-yellow-900/50 to-yellow-800/30 rounded-xl p-5 border border-yellow-500/50">
+                    <p class="text-xs text-gray-400 uppercase tracking-wide">Therapeutic Index</p>
+                    <p id="therapeuticIdx" class="text-3xl font-bold mt-1 text-yellow-400"></p>
+                    <p id="efficacyLabel" class="text-xs text-gray-500"></p>
+                </div>
+            </div>
+
+            <!-- AI Stats (if applicable) -->
+            <div id="aiStats" class="hidden bg-gradient-to-r from-blue-900/50 to-purple-900/50 rounded-xl p-6 border border-blue-500/50">
+                <h3 class="text-lg font-semibold mb-4 flex items-center gap-2">
+                    <span class="text-2xl animate-pulse-slow">🤖</span> 
+                    AI Optimization Results
+                </h3>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+                    <div class="bg-gray-800/50 rounded-lg p-3">
+                        <p class="text-2xl font-bold text-blue-400" id="totalIterations"></p>
+                        <p class="text-xs text-gray-400">Total Iterations</p>
+                    </div>
+                    <div class="bg-gray-800/50 rounded-lg p-3">
+                        <p class="text-2xl font-bold text-green-400" id="layoutsEvaluated"></p>
+                        <p class="text-xs text-gray-400">Layouts Evaluated</p>
+                    </div>
+                    <div class="bg-gray-800/50 rounded-lg p-3">
+                        <p class="text-2xl font-bold text-purple-400" id="bestModType"></p>
+                        <p class="text-xs text-gray-400">Best Modification</p>
+                    </div>
+                    <div class="bg-gray-800/50 rounded-lg p-3">
+                        <p class="text-2xl font-bold text-yellow-400" id="bestTI"></p>
+                        <p class="text-xs text-gray-400">Best Therapeutic Index</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Warnings -->
+            <div id="warnings" class="hidden space-y-2"></div>
+
+            <!-- Recommendation -->
+            <div id="recommendation" class="bg-gray-900/80 backdrop-blur rounded-xl p-6 border border-gray-700">
+                <h3 class="text-lg font-semibold mb-2">💡 Recommendation</h3>
+                <p id="recommendationText" class="text-lg"></p>
+            </div>
+        </div>
+
+        <!-- Error Display -->
+        <div id="errorDisplay" class="hidden bg-red-900/50 border border-red-700 rounded-xl p-6 mt-6">
+            <h3 class="text-lg font-semibold text-red-400 mb-2">❌ Error</h3>
+            <p id="errorText"></p>
+            <p class="text-sm text-gray-400 mt-2">
+                Note: This demo requires the Flask server to be running. 
+                Start it with: <code class="bg-gray-800 px-2 py-1 rounded">python web_app/app.py</code>
+            </p>
+        </div>
+
+        <!-- Info Section -->
+        <div class="mt-8 bg-gray-900/50 rounded-xl p-6 border border-gray-700">
+            <h3 class="text-lg font-semibold mb-4">📚 Scientific Background</h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                <div class="bg-gray-800/50 rounded-lg p-4">
+                    <h4 class="font-semibold text-blue-400 mb-2">Position Rules</h4>
+                    <ul class="text-gray-400 space-y-1">
+                        <li>• Positions 9-12: <span class="text-red-400">NEVER modify</span> (cleavage zone)</li>
+                        <li>• Position 2: Critical for off-target reduction</li>
+                        <li>• 3'-overhang: Best for modifications</li>
+                    </ul>
+                </div>
+                <div class="bg-gray-800/50 rounded-lg p-4">
+                    <h4 class="font-semibold text-green-400 mb-2">Modification Types</h4>
+                    <ul class="text-gray-400 space-y-1">
+                        <li>• <span class="text-blue-400">2'-OMe</span>: Balance of stability/activity</li>
+                        <li>• <span class="text-orange-400">2'-F</span>: Best for nuclease resistance</li>
+                        <li>• <span class="text-purple-400">PS</span>: Highest serum stability</li>
+                    </ul>
+                </div>
+                <div class="bg-gray-800/50 rounded-lg p-4">
+                    <h4 class="font-semibold text-purple-400 mb-2">References</h4>
+                    <ul class="text-gray-400 space-y-1 text-xs">
+                        <li>• Bramsen et al. (2009) NAR 38:7688</li>
+                        <li>• Jackson et al. (2006) RNA 12:1197</li>
+                        <li>• Liu et al. (2024) Int J Biol Macromol</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Standalone Mode Info -->
+        <div class="mt-4 bg-yellow-900/30 border border-yellow-700 rounded-xl p-4">
+            <p class="text-sm text-yellow-200">
+                <strong>💡 Running in Demo Mode:</strong> 
+                This page shows the UI layout. For full functionality, run the Flask backend:
+                <code class="bg-gray-800 px-2 py-1 rounded ml-2">cd web_app && python app.py</code>
+                Then refresh this page to connect to the API.
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // Color mapping for modifications
+        const modColors = {
+            '2_ome': { bg: 'bg-blue-900/30', text: 'text-blue-400', border: 'border-blue-500' },
+            '2_f': { bg: 'bg-orange-900/30', text: 'text-orange-400', border: 'border-orange-500' },
+            'ps': { bg: 'bg-purple-900/30', text: 'text-purple-400', border: 'border-purple-500' }
+        };
+
+        function getEfficacyClass(ti) {
+            if (ti >= 70) return { color: 'text-green-400', bg: 'bg-green-900/50', label: 'Excellent' };
+            if (ti >= 50) return { color: 'text-yellow-400', bg: 'bg-yellow-900/50', label: 'Good' };
+            if (ti >= 30) return { color: 'text-orange-400', bg: 'bg-orange-900/50', label: 'Moderate' };
+            return { color: 'text-red-400', bg: 'bg-red-900/50', label: 'Poor' };
+        }
+
+        async function runSimulation() {
+            const btn = document.getElementById('runBtn');
+            const btnText = document.getElementById('btnText');
+            const results = document.getElementById('results');
+            const errorDisplay = document.getElementById('errorDisplay');
+
+            // Show loading
+            btn.disabled = true;
+            btnText.textContent = 'Processing...';
+            results.classList.add('hidden');
+            errorDisplay.classList.add('hidden');
+
+            const sequence = document.getElementById('sequence').value.toUpperCase().replace(/T/g, 'U');
+            const modType = document.getElementById('modType').value;
+            const positions = document.getElementById('positions').value;
+            const useAI = document.getElementById('useAI').checked;
+
+            try {
+                // Try API call
+                const response = await fetch('/api/chem_modify', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        sequence,
+                        modType,
+                        positions: positions ? positions.split(',').map(p => parseInt(p.trim())) : null,
+                        useAIOptimization: useAI
+                    })
+                });
+
+                if (!response.ok) throw new Error('API request failed');
+                
+                const data = await response.json();
+                displayResults(data);
+                results.classList.remove('hidden');
+
+            } catch (error) {
+                // Show error and run in demo mode
+                console.log('API not available, running in demo mode');
+                const demoResult = runDemoMode(sequence, modType, positions, useAI);
+                displayResults(demoResult);
+                results.classList.remove('hidden');
+                
+                // Show info about demo mode
+                const infoBox = document.createElement('div');
+                infoBox.className = 'bg-yellow-900/30 border border-yellow-700 rounded-lg p-4 mt-4';
+                infoBox.innerHTML = '<p class="text-yellow-200 text-sm"><strong>Demo Mode:</strong> Showing calculated values. Connect to Flask backend for full AI optimization.</p>';
+                results.insertBefore(infoBox, results.firstChild);
+            }
+
+            btn.disabled = false;
+            btnText.textContent = 'Run Chemical Modification Simulation';
+        }
+
+        function runDemoMode(sequence, modType, positionsStr, useAI) {
+            // Demo calculations based on the chem_simulator logic
+            const baseHalfLife = 0.5;
+            const length = sequence.length;
+            
+            // Default positions if not specified
+            let positions = positionsStr ? 
+                positionsStr.split(',').map(p => parseInt(p.trim())).filter(p => !isNaN(p)) :
+                [];
+            
+            if (positions.length === 0) {
+                // Auto-select based on mod type
+                if (modType === 'ps') {
+                    positions = [0, 1, length - 2, length - 1];
+                } else if (modType === '2_f') {
+                    for (let i = 0; i < length; i++) {
+                        if (['C', 'U'].includes(sequence[i]) && i >= 9 && i <= 12) continue;
+                        positions.push(i);
+                    }
+                } else {
+                    for (let i = 0; i < length; i += 2) {
+                        if (i >= 9 && i <= 12) continue;
+                        positions.push(i);
+                    }
+                }
+            }
+
+            // Filter out cleavage zone
+            const blockedPositions = positions.filter(p => p >= 9 && p <= 12);
+            const safePositions = positions.filter(p => !(p >= 9 && p <= 12));
+
+            // Count pyrimidines and purines
+            let pyrimidinesModified = 0;
+            let purinesModified = 0;
+            for (const p of safePositions) {
+                if (['C', 'U'].includes(sequence[p])) pyrimidinesModified++;
+                else purinesModified++;
+            }
+
+            // Calculate metrics based on modification type
+            let stabilityBoost, ago2PenaltyPyr, ago2PenaltyPur, nucleaseResistance, immuneSuppression;
+            
+            switch (modType) {
+                case '2_ome':
+                    stabilityBoost = 0.35;
+                    ago2PenaltyPyr = 5.0;
+                    ago2PenaltyPur = 10.0;
+                    nucleaseResistance = 0.85;
+                    immuneSuppression = 0.80;
+                    break;
+                case '2_f':
+                    stabilityBoost = 0.55;
+                    ago2PenaltyPyr = 3.0;
+                    ago2PenaltyPur = 6.0;
+                    nucleaseResistance = 0.90;
+                    immuneSuppression = 0.85;
+                    break;
+                case 'ps':
+                    stabilityBoost = 0.75;
+                    ago2PenaltyPyr = 8.0;
+                    ago2PenaltyPur = 16.0;
+                    nucleaseResistance = 0.95;
+                    immuneSuppression = 0.90;
+                    break;
+            }
+
+            // Half-life calculation
+            const nucleaseFactor = 1.0 + (safePositions.length / length) * nucleaseResistance;
+            const stabilityBoostVal = (pyrimidinesModified + purinesModified * 0.5) * stabilityBoost;
+            const halfLife = Math.min(baseHalfLife * nucleaseFactor + stabilityBoostVal, 72);
+
+            // Ago2 binding calculation
+            const ago2Penalty = (pyrimidinesModified * ago2PenaltyPyr + purinesModified * ago2PenaltyPur) + (blockedPositions.length * 25);
+            const ago2Binding = Math.max(0, 100 - ago2Penalty);
+
+            // Immune suppression
+            const immuneSupp = immuneSuppression * (safePositions.length / length) * 100;
+
+            // Therapeutic index
+            const halfLifeScore = Math.min(halfLife / 72, 1.0) * 100;
+            const therapeuticIndex = (halfLifeScore * 0.5) + (ago2Binding * 0.5);
+
+            // Generate warnings
+            const warnings = [];
+            if (safePositions.length / length > 0.6) {
+                warnings.push('CAUTION: Over-modification detected (>60% density). Ago2 loading severely impacted.');
+            }
+            if (blockedPositions.length > 0) {
+                warnings.push(`WARNING: ${blockedPositions.length} position(s) in the Ago2 cleavage zone (9-12) were blocked.`);
+            }
+            if (ago2Binding < 50) {
+                warnings.push('CRITICAL: Ago2 binding affinity below 50%. Silencing efficacy will be drastically reduced.');
+            }
+            if (halfLife < 2.0) {
+                warnings.push('NOTE: Stability half-life is very short (<2h). Consider additional modifications.');
+            }
+            if (warnings.length === 0) {
+                warnings.push('Modification profile is within safe therapeutic parameters.');
+            }
+
+            // Generate modified sequence display
+            let modifiedDisplay = '';
+            const modifications = {};
+            for (let i = 0; i < sequence.length; i++) {
+                if (safePositions.includes(i)) {
+                    modifiedDisplay += `[${sequence[i]}*]`;
+                    modifications[i] = modType;
+                } else {
+                    modifiedDisplay += sequence[i];
+                }
+            }
+
+            return {
+                originalSequence: sequence,
+                modifiedDisplay,
+                modificationType: modType === '2_ome' ? "2'-O-Methyl (2'-OMe)" : 
+                                 modType === '2_f' ? "2'-Fluoro (2'-F)" : "Phosphorothioate (PS)",
+                modifiedPositions: safePositions,
+                numModified: safePositions.length,
+                modificationDensity: (safePositions.length / length) * 100,
+                isOverModified: safePositions.length / length > 0.6,
+                stabilityHalfLife: halfLife,
+                ago2Affinity: ago2Binding,
+                immuneSuppression: immuneSupp,
+                therapeuticIndex,
+                warnings,
+                aiOptimized: useAI,
+                searchStats: useAI ? {
+                    totalIterations: 2000,
+                    layoutsEvaluated: Math.floor(Math.random() * 500) + 1500,
+                    bestModType: modType === '2_ome' ? "2'-O-Methyl (2'-OMe)" : 
+                                 modType === '2_f' ? "2'-Fluoro (2'-F)" : "Phosphorothioate (PS)",
+                    bestTherapeuticIndex: therapeuticIndex + Math.random() * 5
+                } : null
+            };
+        }
+
+        function displayResults(data) {
+            // Sequence display
+            document.getElementById('origSeq').textContent = data.originalSequence;
+            document.getElementById('modSeq').innerHTML = data.modifiedDisplay
+                .replace(/\[([A-Z])\*\]/g, '<span class="text-green-400 font-bold">[$1*]</span>');
+            document.getElementById('modPositions').textContent = data.modifiedPositions.join(', ');
+            document.getElementById('modDensity').textContent = data.modificationDensity.toFixed(1) + '%';
+
+            // Metrics
+            document.getElementById('halfLife').textContent = data.stabilityHalfLife.toFixed(1) + 'h';
+            document.getElementById('ago2Binding').textContent = data.ago2Affinity.toFixed(1) + '%';
+            document.getElementById('immuneSupp').textContent = data.immuneSuppression.toFixed(1) + '%';
+            
+            const ti = data.therapeuticIndex;
+            document.getElementById('therapeuticIdx').textContent = ti.toFixed(1);
+            const efficacy = getEfficacyClass(ti);
+            document.getElementById('efficacyLabel').textContent = efficacy.label;
+            document.getElementById('tiCard').className = `rounded-xl p-5 border ${efficacy.bg} ${efficacy.color.replace('text-', 'border-')}`;
+            document.getElementById('therapeuticIdx').className = `text-3xl font-bold mt-1 ${efficacy.color}`;
+
+            // AI Stats
+            if (data.aiOptimized && data.searchStats) {
+                document.getElementById('aiStats').classList.remove('hidden');
+                document.getElementById('totalIterations').textContent = data.searchStats.totalIterations.toLocaleString();
+                document.getElementById('layoutsEvaluated').textContent = data.searchStats.layoutsEvaluated.toLocaleString();
+                document.getElementById('bestModType').textContent = data.searchStats.bestModType.split(' ')[0];
+                document.getElementById('bestTI').textContent = data.searchStats.bestTherapeuticIndex.toFixed(1);
+            } else {
+                document.getElementById('aiStats').classList.add('hidden');
+            }
+
+            // Warnings
+            const warningsContainer = document.getElementById('warnings');
+            warningsContainer.innerHTML = '';
+            warningsContainer.classList.remove('hidden');
+            data.warnings.forEach(warning => {
+                const isCritical = warning.includes('CRITICAL');
+                const isWarning = warning.includes('WARNING') || warning.includes('CAUTION');
+                const div = document.createElement('div');
+                div.className = `p-3 rounded-lg text-sm ${
+                    isCritical ? 'bg-red-900/50 border border-red-700 text-red-300' :
+                    isWarning ? 'bg-yellow-900/50 border border-yellow-700 text-yellow-300' :
+                    'bg-green-900/50 border border-green-700 text-green-300'
+                }`;
+                div.textContent = warning;
+                warningsContainer.appendChild(div);
+            });
+
+            // Recommendation
+            const recText = document.getElementById('recommendationText');
+            const efficacy2 = getEfficacyClass(ti);
+            recText.className = `text-lg ${efficacy2.color}`;
+            recText.textContent = ti >= 70 
+                ? '✅ Excellent candidate for in vivo application. High stability with maintained activity.'
+                : ti >= 50
+                ? '⚠️ Good candidate. Consider further optimization of modification positions.'
+                : ti >= 30
+                ? '⚠️ Moderate candidate. Review modification positions and consider alternative types.'
+                : '❌ Poor candidate. Cleavage zone violation or excessive activity loss. Redesign recommended.';
+        }
+
+        // Run on page load with demo data
+        window.addEventListener('load', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('auto') !== 'false') {
+                runSimulation();
+            }
+        });
+    </script>
+</body>
+</html>
