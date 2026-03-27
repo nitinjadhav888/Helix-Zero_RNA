@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: helix-zero-rna-cms
+    runtime: docker
+    rootDir: cms_service
+    plan: starter
+    autoDeploy: true
+    healthCheckPath: /
+    envVars:
+      - key: PYTHONUNBUFFERED
+        value: "1"
