@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 """
 Helix-Zero V8 :: True Deep Learning Foundation Model (RiNALMo-v2)
 Nucleotide Transformer for siRNA Efficacy Prediction
