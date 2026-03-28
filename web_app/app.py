@@ -1,6 +1,7 @@
 from flask import Flask, render_template, jsonify, request
 import requests
 import os
+import time
 from engine import run_first_model_pipeline
 from chem_simulator import apply_modifications
 from svg_generator import generate_modification_svg
@@ -23,6 +24,36 @@ with app.app_context():
 
 DL_BACKEND_URL = os.getenv("DL_BACKEND_URL", "http://127.0.0.1:8000")
 CMS_MODULE_URL = os.getenv("CMS_MODULE_URL", "http://127.0.0.1:5001")
+CMS_CONNECT_TIMEOUT = float(os.getenv("CMS_CONNECT_TIMEOUT", "10"))
+CMS_READ_TIMEOUT = float(os.getenv("CMS_READ_TIMEOUT", "90"))
+CMS_MAX_RETRIES = int(os.getenv("CMS_MAX_RETRIES", "2"))
+
+
+def _post_cms_with_retry(path: str, payload: dict):
+    """Call CMS with retry/backoff to tolerate Render cold starts."""
+    last_error = None
+    timeout = (CMS_CONNECT_TIMEOUT, CMS_READ_TIMEOUT)
+
+    for attempt in range(CMS_MAX_RETRIES + 1):
+        try:
+            return requests.post(f"{CMS_MODULE_URL}{path}", json=payload, timeout=timeout)
+        except (requests.exceptions.ReadTimeout, requests.exceptions.ConnectTimeout) as exc:
+            last_error = exc
+            if attempt < CMS_MAX_RETRIES:
+                time.sleep(2 * (attempt + 1))
+                continue
+            raise
+        except requests.exceptions.ConnectionError as exc:
+            last_error = exc
+            if attempt < CMS_MAX_RETRIES:
+                time.sleep(2 * (attempt + 1))
+                continue
+            raise
+
+    if last_error:
+        raise last_error
+
+    raise requests.exceptions.RequestException("Unknown CMS proxy failure")
 
 
 @app.route("/")
@@ -74,8 +105,15 @@ def proxy_cms_predict():
     """Proxy prediction requests to standalone Helix_Zero1 CMS module."""
     try:
         data = request.json or {}
-        response = requests.post(f"{CMS_MODULE_URL}/predict", json=data, timeout=20)
+        response = _post_cms_with_retry("/predict", data)
         return jsonify(response.json()), response.status_code
+    except (requests.exceptions.ReadTimeout, requests.exceptions.ConnectTimeout):
+        return jsonify(
+            {
+                "error": "CMS module timed out while waking up. Please retry in 20-40 seconds.",
+                "upstream": CMS_MODULE_URL,
+            }
+        ), 504
     except requests.exceptions.ConnectionError:
         return jsonify({"error": "CMS module is offline or unreachable."}), 503
     except Exception as e:
@@ -87,8 +125,15 @@ def proxy_cms_optimize():
     """Proxy optimization requests to standalone Helix_Zero1 CMS module."""
     try:
         data = request.json or {}
-        response = requests.post(f"{CMS_MODULE_URL}/optimize", json=data, timeout=30)
+        response = _post_cms_with_retry("/optimize", data)
         return jsonify(response.json()), response.status_code
+    except (requests.exceptions.ReadTimeout, requests.exceptions.ConnectTimeout):
+        return jsonify(
+            {
+                "error": "CMS module timed out while waking up. Please retry in 20-40 seconds.",
+                "upstream": CMS_MODULE_URL,
+            }
+        ), 504
     except requests.exceptions.ConnectionError:
         return jsonify({"error": "CMS module is offline or unreachable."}), 503
     except Exception as e:
